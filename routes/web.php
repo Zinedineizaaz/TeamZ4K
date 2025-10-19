@@ -12,15 +12,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Default route bawaan Laravel (menampilkan welcome.blade.php)
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 // Redirect: jika akses "/start" maka diarahkan ke "/home"
 Route::redirect('/start', '/home');
 
 // Halaman utama
-Route::get('/home', function () {
+Route::get('/', function () {
     // MEMANGGIL VIEW BARU
     return view('pages.home');
 });

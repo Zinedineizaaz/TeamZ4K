@@ -39,24 +39,24 @@ Route::get('/program', [PageController::class, 'program'])->name('program');
 // Halaman Our Team
 Route::get('/our-team', function () {
     // MEMANGGIL VIEW BARU
-    return view('pages.team'); // Menggunakan nama file team.blade.php
+    return view('pages.team');
 });
 
 // Halaman Contact Us
 Route::get('/contact-us', function () {
     // MEMANGGIL VIEW BARU
-    return view('pages.contact'); // Pastikan Anda membuat file contact.blade.php
+    return view('pages.contact');
 });
 
 // Grouping contoh untuk halaman admin
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         // MEMANGGIL VIEW BARU DI FOLDER ADMIN
-        return view('admin.dashboard'); // Pastikan Anda membuat admin/dashboard.blade.php
+        return view('admin.dashboard'); // dashboard.blade.php
     });
     Route::get('/users', function () {
         // MEMANGGIL VIEW BARU DI FOLDER ADMIN
-        return view('admin.users'); // Pastikan Anda membuat admin/users.blade.php
+        return view('admin.users'); // users.blade.php
     });
 });
 
@@ -79,5 +79,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Fallback kalau route tidak ditemukan
 Route::fallback(function () {
     // MEMANGGIL VIEW 404
-    return view('404'); // Pastikan Anda membuat file 404.blade.php
+    return view('404');
 });

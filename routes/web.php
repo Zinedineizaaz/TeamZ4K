@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,10 +34,7 @@ Route::get('/about', function () {
 });
 
 // Halaman Program
-Route::get('/program', function () {
-    // MEMANGGIL VIEW BARU
-    return view('pages.program'); // Pastikan Anda membuat file program.blade.php
-});
+Route::get('/program', [PageController::class, 'program'])->name('program');
 
 // Halaman Our Team
 Route::get('/our-team', function () {
@@ -59,6 +58,22 @@ Route::prefix('admin')->group(function () {
         // MEMANGGIL VIEW BARU DI FOLDER ADMIN
         return view('admin.users'); // Pastikan Anda membuat admin/users.blade.php
     });
+});
+
+// Grouping untuk halaman Admin (Produk CRUD)
+Route::prefix('admin')->name('admin.')->group(function () {
+    
+    // Route resource untuk Product CRUD (ProductController)
+    Route::resource('products', ProductController::class); // <-- CRUD Lengkap
+    
+    // Route bawaan Anda yang sebelumnya
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard'); 
+    })->name('dashboard'); 
+    
+    Route::get('/users', function () {
+        return view('admin.users');
+    })->name('users');
 });
 
 // Fallback kalau route tidak ditemukan

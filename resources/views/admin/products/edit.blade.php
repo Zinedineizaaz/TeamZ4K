@@ -5,25 +5,19 @@
 @section('content')
     <h2 class="dimsai-red mb-4">Edit Produk Dimsum: **{{ $product->name }}**</h2>
     
-    {{-- Form Processing & Validation Error Display --}}
     @if ($errors->any())
         <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+            <ul>@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
         </div>
     @endif
 
-    {{-- Form UPDATE --}}
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" class="p-4 border rounded shadow-sm">
+    {{-- Penting: enctype="multipart/form-data" --}}
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" class="p-4 border rounded shadow-sm" enctype="multipart/form-data">
         @csrf
-        @method('PUT') {{-- Metode untuk Update --}}
+        @method('PUT') 
         
         <div class="mb-3">
             <label for="name" class="form-label">Nama Dimsum</label>
-            {{-- Eloquent: Menggunakan nilai produk saat ini --}}
             <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $product->name) }}" required>
         </div>
         <div class="mb-3">
@@ -39,8 +33,13 @@
             <textarea class="form-control" id="description" name="description">{{ old('description', $product->description) }}</textarea>
         </div>
         <div class="mb-3">
-            <label for="image" class="form-label">URL/Path Gambar</label>
-            <input type="text" class="form-control" id="image" name="image" value="{{ old('image', $product->image) }}">
+            <label for="image" class="form-label">Upload Gambar Produk (Kosongkan jika tidak ingin ganti)</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+
+            @if ($product->image)
+                <small class="text-muted mt-2 d-block">Gambar saat ini:</small>
+                <img src="{{ asset('images/' . $product->image) }}" alt="Gambar Lama" style="max-height: 100px; margin-top: 5px;">
+            @endif
         </div>
         <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="is_promo" name="is_promo" value="1" {{ old('is_promo', $product->is_promo) ? 'checked' : '' }}>

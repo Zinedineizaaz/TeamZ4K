@@ -5,19 +5,14 @@
 @section('content')
     <h2 class="dimsai-red mb-4">Tambah Produk Dimsum Baru</h2>
     
-    {{-- Form Processing & Validation Error Display --}}
     @if ($errors->any())
         <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+            <ul>@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
         </div>
     @endif
 
-    {{-- Form CREATE --}}
-    <form action="{{ route('admin.products.store') }}" method="POST" class="p-4 border rounded shadow-sm">
+    {{-- Penting: enctype="multipart/form-data" --}}
+    <form action="{{ route('admin.products.store') }}" method="POST" class="p-4 border rounded shadow-sm" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label for="name" class="form-label">Nama Dimsum</label>
@@ -36,8 +31,8 @@
             <textarea class="form-control" id="description" name="description">{{ old('description') }}</textarea>
         </div>
         <div class="mb-3">
-            <label for="image" class="form-label">URL/Path Gambar</label>
-            <input type="text" class="form-control" id="image" name="image" value="{{ old('image') }}">
+            <label for="image" class="form-label">Upload Gambar Produk</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*"> 
         </div>
         <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="is_promo" name="is_promo" value="1" {{ old('is_promo') ? 'checked' : '' }}>

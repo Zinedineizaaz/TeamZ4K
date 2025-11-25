@@ -1,3 +1,30 @@
+# 🌟 TEAMZ4K – Dimsayku
+
+## 📌 Deskripsi Project
+TEAMZ4K adalah aplikasi To-Do List berbasis **Laravel** yang menyediakan fitur manajemen tugas harian menggunakan konsep **CRUD**, **Eloquent ORM**, **Form Validation**, **Controller**, dan **Migration**.  
+Project ini dikembangkan sebagai bagian dari pembelajaran framework Laravel.
+
+---
+
+## 👥 Anggota Tim
+| Nama Lengkap | NIM | Peran |
+|--------------|------|-----------------------------------------------|
+| **Agus Saputra Hamzah** | 2310120018 | Ketua Tim – Logika aplikasi & manajemen data |
+| **Khairan Noor Fadhlillah** | 23101200XX | UI/UX & implementasi fitur Login |
+| **Zined** | 23101200XX | Integrasi CRUD & struktur database |
+
+---
+
+## ⚙️ Fitur Utama TEAMZ4K
+- Autentikasi pengguna (Register & Login)
+- CRUD To-Do (Create, Read, Update, Delete)
+- Validasi input form
+- Manajemen data menggunakan Eloquent ORM
+- Routing berbasis Controller
+- Migration & struktur database otomatis
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

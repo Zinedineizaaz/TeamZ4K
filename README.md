@@ -16,7 +16,6 @@ Project ini dikembangkan sebagai bagian dari pembelajaran framework Laravel.
 ---
 
 ## ⚙️ Fitur Utama TEAMZ4K
-- Autentikasi pengguna (Register & Login)
 - CRUD To-Do (Create, Read, Update, Delete)
 - Validasi input form
 - Manajemen data menggunakan Eloquent ORM

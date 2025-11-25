@@ -9,9 +9,9 @@ Project ini dikembangkan sebagai bagian dari pembelajaran framework Laravel.
 ## 👥 Anggota Tim
 | Nama Lengkap | NIM | Peran |
 |--------------|------|-----------------------------------------------|
-| **Agus Saputra Hamzah** | 2310120018 | Ketua Tim – Logika aplikasi & manajemen data |
-| **Khairan Noor Fadhlillah** | 23101200XX | UI/UX & implementasi fitur Login |
-| **Zined** | 23101200XX | Integrasi CRUD & struktur database |
+| **Agus Saputra Hamzah** | 2310120018 | Ketua Tim – Logika aplikasi & manajemen data - Eloquent ORM dan Contoller |
+| **Khairan Noor Fadhlillah** | 23101200XX | UI/UX - Controller dan Collection |
+| **Zined** | 23101200XX | Integrasi CRUD & struktur database - Form Processing dan Validation |
 
 ---
 

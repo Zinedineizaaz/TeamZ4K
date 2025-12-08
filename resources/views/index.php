@@ -1,1 +1,2 @@
-<?php echo "Welcome to Our Simple CI Project";
+<?php echo "Welcome to Our Simple CI Project!";
+

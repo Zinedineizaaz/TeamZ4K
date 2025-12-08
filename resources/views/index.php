@@ -1,0 +1,1 @@
+<?php echo "Welcome to Our Simple CI Project";

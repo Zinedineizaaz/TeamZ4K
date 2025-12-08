@@ -5,6 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property int $price
+ * @property int $stock
+ * @property bool $is_promo
+ * @property string|null $image
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ */
 class Product extends Model
 {
     use HasFactory;
@@ -13,7 +24,8 @@ class Product extends Model
     protected $table = 'products';
 
     // Kolom yang aman diisi (Mass Assignment)
-    protected $fillable = [
+    // Penambahan 'array' type hint untuk kejelasan.
+    protected array $fillable = [
         'name',
         'description',
         'price',
@@ -23,7 +35,8 @@ class Product extends Model
     ];
     
     // Konversi tipe data otomatis
-    protected $casts = [
+    // Penambahan 'array' type hint untuk kejelasan.
+    protected array $casts = [
         'is_promo' => 'boolean',
         'price' => 'integer',
         'stock' => 'integer',

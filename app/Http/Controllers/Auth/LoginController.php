@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -25,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/admin/products';
 
     /**
      * Create a new controller instance.
@@ -36,5 +37,15 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        // Update kolom last_login_at dengan waktu sekarang
+        $user->last_login_at = now();
+        $user->save();
+
+        // Selanjutnya, Laravel akan redirect sesuai $redirectTo
+        // Jika $redirectTo disetel ke /admin/products, maka akan dilanjutkan ke sana.
     }
 }

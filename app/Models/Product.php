@@ -24,8 +24,8 @@ class Product extends Model
     protected $table = 'products';
 
     // Kolom yang aman diisi (Mass Assignment)
-    // Penambahan 'array' type hint untuk kejelasan.
-    protected array $fillable = [
+    // HAPUS 'array' type hint.
+    protected $fillable = [ 
         'name',
         'description',
         'price',
@@ -35,8 +35,8 @@ class Product extends Model
     ];
     
     // Konversi tipe data otomatis
-    // Penambahan 'array' type hint untuk kejelasan.
-    protected array $casts = [
+    // HAPUS 'array' type hint.
+    protected $casts = [ 
         'is_promo' => 'boolean',
         'price' => 'integer',
         'stock' => 'integer',

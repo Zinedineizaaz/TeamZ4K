@@ -26,3 +26,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 Route::fallback(function () { return view('404'); });
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

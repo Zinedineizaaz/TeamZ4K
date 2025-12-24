@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\File; // Pastikan ini ada untuk manipulasi file
 
 class ProductController extends Controller
 {
+    /**
+     * Memastikan hanya user yang login yang bisa akses controller ini.
+     * (Opsional, karena sudah dihandle di route, tapi bagus untuk double protection)
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     // READ (Admin Index)
     public function index()
     {
@@ -44,22 +53,27 @@ class ProductController extends Controller
             $validated['image'] = null;
         }
 
+        // Cek checkbox promo
         $validated['is_promo'] = $request->has('is_promo');
+        
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Produk berhasil ditambahkan!');
     }
 
     // UPDATE (Form)
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact($product));
+        // PERBAIKAN: compact('product') pakai tanda kutip, bukan $product
+        return view('admin.products.edit', compact('product'));
     }
 
     // UPDATE (Store Logic)
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
+            // Tambahkan .$product->id agar tidak error "nama sudah ada" saat update diri sendiri
             'name' => 'required|string|max:100|unique:products,name,' . $product->id,
             'description' => 'nullable|string',
             'price' => 'required|integer|min:1000',
@@ -68,37 +82,50 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // HAPUS gambar lama jika ada di public/products
+            // HAPUS gambar lama jika ada
             if ($product->image && file_exists(public_path('products/' . $product->image))) {
                 unlink(public_path('products/' . $product->image));
             }
 
-            // Simpan gambar baru ke public/products
+            // Simpan gambar baru
             $file = $request->file('image');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('products'), $fileName);
 
             $validated['image'] = $fileName;
         } else {
-            // Jika tidak upload gambar baru, biarkan gambar yang lama
-            $validated['image'] = $product->image;
+            // Jika tidak upload, pertahankan gambar lama
+            // Hapus baris ini: $validated['image'] = $product->image; 
+            // Cukup unset agar tidak menimpa data lama dengan null (optional, tapi cara di bawah aman)
+             unset($validated['image']);
         }
 
         $validated['is_promo'] = $request->has('is_promo');
+        
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Produk berhasil diperbarui!');
     }
 
-    // DELETE
+    // DELETE (INI BAGIAN KRUSIAL POLICE)
     public function destroy(Product $product)
     {
+        // --- SECURITY CHECK (HANYA POLICE YANG BOLEH LEWAT) ---
+        if (auth()->user()->role !== 'superadmin') {
+            return redirect()->route('admin.products.index')
+                ->with('error', 'AKSES DITOLAK: Hanya Police yang boleh menghapus data!');
+        }
+        // -----------------------------------------------------
+
         // Hapus file gambar dari public/products sebelum data dihapus
         if ($product->image && file_exists(public_path('products/' . $product->image))) {
             unlink(public_path('products/' . $product->image));
         }
 
         $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
+        
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Produk berhasil dihapus oleh Police!');
     }
 }

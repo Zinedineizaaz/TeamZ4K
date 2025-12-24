@@ -5,26 +5,68 @@
 @section('content')
     {{-- Konten dashboard admin --}}
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="p-5 border rounded shadow-lg" style="background-color: white;">
+        <div class="col-lg-12"> <div class="p-5 border rounded shadow-lg" style="background-color: white;">
                 
-                <h1 class="dimsai-red mb-3">
-                    <i class="bi bi-speedometer2 me-3"></i>Selamat Datang, Admin!
-                </h1>
+                {{-- HEADER --}}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1 class="dimsai-red mb-0">
+                        <i class="bi bi-speedometer2 me-3"></i>Selamat Datang, {{ Auth::user()->name }}!
+                    </h1>
+                    @if(Auth::user()->role == 'superadmin')
+                        <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill">
+                            <i class="bi bi-shield-lock-fill me-1"></i> POLICE MODE
+                        </span>
+                    @else
+                        <span class="badge bg-secondary fs-6 px-3 py-2 rounded-pill">
+                            <i class="bi bi-person-badge-fill me-1"></i> STAFF ADMIN
+                        </span>
+                    @endif
+                </div>
 
                 <p class="lead text-muted">
-                    Ini adalah area kontrol untuk mengelola konten dan data UMKM Dimsaykuu Anda.
+                    Area kontrol untuk mengelola konten dan data UMKM Dimsaykuu.
                 </p>
-
                 <p class="text-muted fst-italic">
-                    Terakhir diperbarui: {{ now()->format('d M Y, H:i') }}
+                    Terakhir Login: {{ Auth::user()->last_login_at ? \Carbon\Carbon::parse(Auth::user()->last_login_at)->format('d M Y, H:i') : 'Baru saja' }}
                 </p>
 
                 <hr class="my-4">
 
+                {{-- STATISTIK RINGKAS (NEW) --}}
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-danger mb-3 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="bi bi-box-seam"></i> Total Produk</h5>
+                                <p class="card-text display-6 fw-bold">{{ $total_products }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-dark bg-warning mb-3 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="bi bi-layers"></i> Total Stok</h5>
+                                <p class="card-text display-6 fw-bold">{{ $total_stock }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Statistik User Cuma Muncul buat Police --}}
+                    @if(Auth::user()->role == 'superadmin')
+                    <div class="col-md-4">
+                        <div class="card text-white bg-dark mb-3 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="bi bi-people"></i> Total User</h5>
+                                <p class="card-text display-6 fw-bold">{{ $total_users }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
                 <h3 class="dimsai-red mb-3">Aksi Cepat</h3>
 
                 <div class="row">
+                    {{-- KARTU 1: KELOLA PRODUK (SEMUA BISA LIHAT) --}}
                     <div class="col-md-6 mb-3">
                         <div class="card bg-light h-100 border-start border-danger border-5">
                             <div class="card-body">
@@ -39,26 +81,67 @@
                         </div>
                     </div>
 
+                    {{-- KARTU 2: LIHAT ADMIN (HANYA POLICE YANG BISA LIHAT) --}}
+                    @if(Auth::user()->role == 'superadmin')
                     <div class="col-md-6 mb-3">
-                        <div class="card bg-light h-100 border-start border-warning border-5">
+                        <div class="card bg-light h-100 border-start border-dark border-5">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">Lihat Data Admin</h5>
                                 <p class="card-text text-secondary">
-                                    Akses data Admin untuk melihat riwayat login mereka.
+                                    Akses data Admin untuk melihat riwayat login tim.
                                 </p>
-                                <a href="{{ route('admin.users') }}" class="btn btn-warning text-dark">
-                                    <i class="bi bi-people me-2"></i>Akses Admin
+                                <a href="{{ route('admin.users') }}" class="btn btn-dark">
+                                    <i class="bi bi-people me-2"></i>Akses Admin (Police Only)
                                 </a>
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
 
-                <hr class="mt-4">
-
-                <p class="mt-3 text-end">
+                {{-- TABEL MONITORING (HANYA POLICE YANG BISA LIHAT) --}}
+                @if(Auth::user()->role == 'superadmin')
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <i class="bi bi-eye-fill me-2"></i> <strong>Monitoring Aktivitas Tim (Police View)</strong>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Login Terakhir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($recent_logins as $user)
+                                <tr>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>
+                                        @if($user->role == 'superadmin')
+                                            <span class="badge bg-danger">Police</span>
+                                        @else
+                                            <span class="badge bg-secondary">Staff</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : 'Belum Login' }}
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
+                
+                {{-- FOOTER KECIL --}}
+                <p class="mt-4 text-end">
                     <small class="text-secondary">
-                        Pastikan data Anda selalu terbarukan.
+                        Sistem Dimsaykuu v1.0 &bull; Role Anda: <strong>{{ ucfirst(Auth::user()->role) }}</strong>
                     </small>
                 </p>
 

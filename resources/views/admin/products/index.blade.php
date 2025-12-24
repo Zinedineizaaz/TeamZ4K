@@ -30,7 +30,7 @@
                     <td>{{ $product->id }}</td>
                     <td>
                         @if ($product->image)
-                            <img src="{{ asset('images/' . $product->image) }}" alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                            <img src="{{ asset('products/' . $product->image) }}" alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                         @else
                             N/A
                         @endif

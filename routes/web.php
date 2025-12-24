@@ -20,6 +20,7 @@ Route::get('/our-team', function () {
     return view('pages.team'); });
 Route::get('/contact-us', function () {
     return view('pages.contact'); });
+Route::get('/menu', [PageController::class, 'menu'])->name('pages.menu');
 
 // Admin Group (CRUD)
 Route::prefix('admin')->name('admin.')->group(function () {

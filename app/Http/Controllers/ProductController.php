@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
@@ -23,27 +24,28 @@ class ProductController extends Controller
     // CREATE (Store Logic)
     public function store(Request $request)
     {
-        // Form Validation
         $validated = $request->validate([
             'name' => 'required|string|max:100|unique:products,name',
             'description' => 'nullable|string',
             'price' => 'required|integer|min:1000',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-        
-        // Proses Upload Gambar ke public/images
+
+        // Proses Upload Gambar ke public/products
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images'), $fileName); 
+
+            // Pindahkan ke folder public/products
+            $file->move(public_path('products'), $fileName);
             $validated['image'] = $fileName;
         } else {
             $validated['image'] = null;
         }
-        
+
         $validated['is_promo'] = $request->has('is_promo');
-        Product::create($validated); // Eloquent ORM (Create)
+        Product::create($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
@@ -51,40 +53,39 @@ class ProductController extends Controller
     // UPDATE (Form)
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        return view('admin.products.edit', compact($product));
     }
 
     // UPDATE (Store Logic)
     public function update(Request $request, Product $product)
     {
-        // Form Validation
         $validated = $request->validate([
-            'name' => 'required|string|max:100|unique:products,name,'.$product->id, 
+            'name' => 'required|string|max:100|unique:products,name,' . $product->id,
             'description' => 'nullable|string',
             'price' => 'required|integer|min:1000',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-        
-        // Proses Upload Gambar
+
         if ($request->hasFile('image')) {
-            // Hapus gambar lama dari public/images
-            if ($product->image && file_exists(public_path('images/' . $product->image))) {
-                unlink(public_path('images/' . $product->image));
+            // HAPUS gambar lama jika ada di public/products
+            if ($product->image && file_exists(public_path('products/' . $product->image))) {
+                unlink(public_path('products/' . $product->image));
             }
-            
-            // Simpan gambar baru
+
+            // Simpan gambar baru ke public/products
             $file = $request->file('image');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images'), $fileName);
-            
+            $file->move(public_path('products'), $fileName);
+
             $validated['image'] = $fileName;
         } else {
-            unset($validated['image']); // Pertahankan nilai gambar lama
+            // Jika tidak upload gambar baru, biarkan gambar yang lama
+            $validated['image'] = $product->image;
         }
-        
-        $validated['is_promo'] = $request->has('is_promo'); 
-        $product->update($validated); // Eloquent ORM (Update)
+
+        $validated['is_promo'] = $request->has('is_promo');
+        $product->update($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
     }
@@ -92,12 +93,12 @@ class ProductController extends Controller
     // DELETE
     public function destroy(Product $product)
     {
-        // Hapus file gambar dari public/images
-        if ($product->image && file_exists(public_path('images/' . $product->image))) {
-            unlink(public_path('images/' . $product->image));
+        // Hapus file gambar dari public/products sebelum data dihapus
+        if ($product->image && file_exists(public_path('products/' . $product->image))) {
+            unlink(public_path('products/' . $product->image));
         }
 
-        $product->delete(); // Eloquent ORM (Delete)
+        $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
     }
 }

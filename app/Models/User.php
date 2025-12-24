@@ -17,6 +17,12 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'last_login_at', // <-- TAMBAHKAN INI AGAR BISA DISIMPAN KE DATABASE
+    ];
     protected $casts = [
         'email_verified_at' => 'datetime',
         // PENTING: TAMBAHKAN BARIS INI

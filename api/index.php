@@ -1,14 +1,23 @@
 <?php
 
-// Pindahkan folder storage dan cache ke /tmp agar writable
-$app = require __DIR__ . '/../bootstrap/app.php';
+// 1. Panggil autoload dari Composer [Wajib]
+require __DIR__ . '/../vendor/autoload.php';
 
+// 2. Inisialisasi aplikasi Laravel
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+
+// 3. Konfigurasi folder writable di Vercel
 $app->useStoragePath('/tmp/storage');
-$app->setBootstrapContainerPath('/tmp/bootstrap');
 
-// Pastikan folder yang dibutuhkan ada
+// Pastikan folder untuk view cache tersedia
 if (!is_dir('/tmp/storage/framework/views')) {
     mkdir('/tmp/storage/framework/views', 0755, true);
 }
 
-require __DIR__ . '/../public/index.php';
+// 4. Jalankan aplikasi melalui Kernel
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+);
+$response->send();
+$kernel->terminate($request, $response);

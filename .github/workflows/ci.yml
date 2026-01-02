@@ -1,26 +1,33 @@
-name: Simple PHP CI
-
+name: Laravel CI-CD Pipeline
 on:
   push:
-    branches: [ main ]
+    branches: [ staging ]  # Poin 1a
   pull_request:
-    branches: [ main ]
-
+    branches: [ main ]     # Poin 1b
 jobs:
-  php-check:
+  laravel-tests:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.2
-
-      - name: Validate PHP syntax
-        run: php -l index.php
-
-      - name: Run basic script
-        run: echo "CI pipeline berhasil dijalankan!"
+    - uses: actions/checkout@v3
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, bcmath, pdo_mysql, pdo_sqlite
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - name: Install NPM Dependencies
+      run: npm install
+    - name: Build Assets
+      run: npm run build
+    - name: Install Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+    - name: Run Tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ":memory:"
+      run: php artisan test

@@ -1,19 +1,36 @@
 name: Laravel CI-CD Pipeline
+
 on:
   push:
-    branches: [ staging ]  # Trigger otomatis saat push ke staging (Poin 1a)
+    branches: [ staging ]  # Poin 1a: Trigger otomatis saat push ke staging
   pull_request:
-    branches: [ main ]     # Validasi otomatis saat penggabungan ke main (Poin 1b)
+    branches: [ main ]     # Poin 1b: Validasi otomatis saat penggabungan ke main
+
 jobs:
-  tests:
+  laravel-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-      - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress
-      - name: Run Tests (Poin 1)
-        run: php artisan test # Menjalankan unit/feature testing secara otomatis
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, bcmath, pdo_mysql, pdo_sqlite
+
+    - name: Install Composer Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Generate APP_KEY
+      run: php artisan key:generate # Memperbaiki MissingAppKeyException
+
+    - name: Execute Tests (Poin 1)
+      # Memperbaiki Access denied dengan menggunakan SQLite memory
+      run: php artisan test 
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ":memory:"

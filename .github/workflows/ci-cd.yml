@@ -27,11 +27,8 @@ jobs:
         php -r "file_exists('.env') || copy('.env.example', '.env');"
         php artisan key:generate
 
-    - name: Execute Migrations and Tests (Poin 1)
-      # Menjalankan migrasi DAN tes dalam satu perintah agar tabel pasti ada
-      run: |
-        php artisan migrate --force
-        php artisan test
+    - name: Execute Tests (Poin 1)
+      run: php artisan test
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: ":memory:"

@@ -4,12 +4,15 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserAccessTest extends TestCase
 {
     /**
      * Test 1: Halaman Login harus bisa dibuka oleh tamu.
      */
+    use RefreshDatabase;
+    /** @test */
     public function test_login_page_is_accessible()
     {
         $response = $this->get('/login');

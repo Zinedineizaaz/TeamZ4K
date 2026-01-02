@@ -46,10 +46,10 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
+            'host' => env('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'),
+            'port' => env('DB_PORT', '4000'),
             'database' => env('DB_DATABASE', 'wf20251_Dimsayku'),
-            'username' => env('DB_USERNAME', 'root'),
+            'username' => env('DB_USERNAME', '3EY97xZRogLRqWj.root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
@@ -58,13 +58,14 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                // PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-                1014 => true, // Memaksa koneksi SSL agar TiDB tidak menolak (Insecure Transport)
+            'options' => [
+                PDO::MYSQL_ATTR_SSL_CA => base_path('certs/isrgrootx1.pem'),
+                // Mematikan verifikasi file fisik agar tidak error di Vercel
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-            ]) : [],
+                // Memberitahu MySQL untuk tetap menggunakan enkripsi (Wajib untuk TiDB)
+                1014 => true,
+            ],
         ],
-
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
@@ -127,7 +128,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

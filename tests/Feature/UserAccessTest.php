@@ -24,15 +24,12 @@ class UserAccessTest extends TestCase
      */
     public function test_user_cannot_access_police_area()
     {
-        // 1. Buat user palsu (bukan superadmin)
-        $user = User::factory()->create([
-            'role' => 'user',
-        ]);
+        $user = User::factory()->create(['role' => 'user']);
 
-        // 2. Coba paksa masuk ke halaman users
+        // 2. Coba paksa masuk ke halaman admin/users
         $response = $this->actingAs($user)->get('/admin/users');
 
-        // 3. Harusnya ditendang (Redirect status 302)
-        $response->assertStatus(302);
+        // 3. Ubah dari 302 menjadi 403 (Forbidden)
+        $response->assertStatus(403);
     }
 }

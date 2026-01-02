@@ -1,0 +1,6 @@
+{
+    "version": 2,
+    "nodes": [{ "node_version": "20.x" }],
+    "functions": { "api/*.php": { "runtime": "vercel-php@0.7.5" } },
+    "routes": [{ "src": "/(.*)", "dest": "/api/index.php" }]
+}

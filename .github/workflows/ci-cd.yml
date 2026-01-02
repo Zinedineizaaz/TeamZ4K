@@ -28,8 +28,15 @@ jobs:
     - name: Generate APP_KEY
       run: php artisan key:generate # Memperbaiki MissingAppKeyException
 
+    - name: Run Migrations
+      # Memperbaiki error "no such table" dengan membuat tabel di SQLite memory
+      run: php artisan migrate --force
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ":memory:"
+
     - name: Execute Tests (Poin 1)
-      # Memperbaiki Access denied dengan menggunakan SQLite memory
+      # Menjalankan unit & feature testing secara otomatis
       run: php artisan test 
       env:
         DB_CONNECTION: sqlite

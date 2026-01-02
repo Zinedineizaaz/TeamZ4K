@@ -109,23 +109,23 @@ class ProductController extends Controller
     }
 
     // DELETE (INI BAGIAN KRUSIAL POLICE)
-    public function destroy(Product $product)
-    {
-        // --- SECURITY CHECK (HANYA POLICE YANG BOLEH LEWAT) ---
-        if (auth()->user()->role !== 'superadmin') {
-            return redirect()->route('admin.products.index')
-                ->with('error', 'AKSES DITOLAK: Hanya Police yang boleh menghapus data!');
-        }
-        // -----------------------------------------------------
+    
+   public function destroy(Product $product)
+{
+    // --- PANGGIL POLICY (GANTINYA IF MANUAL) ---
+    // Baris ini otomatis mengecek file 'ProductPolicy.php' fungsi 'delete'.
+    // Kalau user bukan Superadmin, otomatis STOP dan lari ke Halaman Gembok (403).
+    $this->authorize('delete', $product);
+    // -------------------------------------------
 
-        // Hapus file gambar dari public/products sebelum data dihapus
-        if ($product->image && file_exists(public_path('products/' . $product->image))) {
-            unlink(public_path('products/' . $product->image));
-        }
-
-        $product->delete();
-        
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Produk berhasil dihapus oleh Police!');
+    // Hapus file gambar jika ada
+    if ($product->image && !str_starts_with($product->image, 'http') && file_exists(public_path('products/' . $product->image))) {
+        unlink(public_path('products/' . $product->image));
     }
+
+    $product->delete();
+    
+    return redirect()->route('admin.products.index')
+        ->with('success', 'Produk berhasil dimusnahkan oleh Police!');
+}
 }

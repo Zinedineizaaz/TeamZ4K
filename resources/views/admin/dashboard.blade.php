@@ -5,7 +5,8 @@
 @section('content')
     {{-- Konten dashboard admin --}}
     <div class="row justify-content-center">
-        <div class="col-lg-12"> <div class="p-5 border rounded shadow-lg" style="background-color: white;">
+        <div class="col-lg-12"> 
+            <div class="p-5 border rounded shadow-lg" style="background-color: white;">
                 
                 {{-- HEADER --}}
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -32,8 +33,9 @@
 
                 <hr class="my-4">
 
-                {{-- STATISTIK RINGKAS (NEW) --}}
+                {{-- STATISTIK RINGKAS --}}
                 <div class="row mb-4">
+                    {{-- Stat Produk --}}
                     <div class="col-md-4">
                         <div class="card text-white bg-danger mb-3 shadow-sm h-100">
                             <div class="card-body">
@@ -42,6 +44,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Stat Stok --}}
                     <div class="col-md-4">
                         <div class="card text-dark bg-warning mb-3 shadow-sm h-100">
                             <div class="card-body">
@@ -50,7 +53,7 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Statistik User Cuma Muncul buat Police --}}
+                    {{-- Stat User (Hanya Police) --}}
                     @if(Auth::user()->role == 'superadmin')
                     <div class="col-md-4">
                         <div class="card text-white bg-dark mb-3 shadow-sm h-100">
@@ -66,7 +69,7 @@
                 <h3 class="dimsai-red mb-3">Aksi Cepat</h3>
 
                 <div class="row">
-                    {{-- KARTU 1: KELOLA PRODUK (SEMUA BISA LIHAT) --}}
+                    {{-- KARTU 1: KELOLA PRODUK (SEMUA BISA KLIK) --}}
                     <div class="col-md-6 mb-3">
                         <div class="card bg-light h-100 border-start border-danger border-5">
                             <div class="card-body">
@@ -81,25 +84,42 @@
                         </div>
                     </div>
 
-                    {{-- KARTU 2: LIHAT ADMIN (HANYA POLICE YANG BISA LIHAT) --}}
-                    @if(Auth::user()->role == 'superadmin')
+                    {{-- KARTU 2: LIHAT ADMIN (VERSI GEMBOK UTK STAFF) --}}
                     <div class="col-md-6 mb-3">
-                        <div class="card bg-light h-100 border-start border-dark border-5">
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold">Lihat Data Admin</h5>
-                                <p class="card-text text-secondary">
-                                    Akses data Admin untuk melihat riwayat login tim.
-                                </p>
-                                <a href="{{ route('admin.users') }}" class="btn btn-dark">
-                                    <i class="bi bi-people me-2"></i>Akses Admin (Police Only)
-                                </a>
+                        @if(Auth::user()->role == 'superadmin')
+                            {{-- TAMPILAN POLICE (AKTIF) --}}
+                            <div class="card bg-light h-100 border-start border-dark border-5">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">Lihat Data Admin</h5>
+                                    <p class="card-text text-secondary">
+                                        Akses data Admin untuk melihat riwayat login tim.
+                                    </p>
+                                    <a href="{{ route('admin.users') }}" class="btn btn-dark">
+                                        <i class="bi bi-people me-2"></i>Akses Admin (Police)
+                                    </a>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            {{-- TAMPILAN STAFF (TERKUNCI / GEMBOK) --}}
+                            <div class="card bg-light h-100 border-start border-secondary border-5" style="opacity: 0.6;">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold text-muted">
+                                        <i class="bi bi-lock-fill me-1"></i> Lihat Data Admin
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        Menu ini dikunci. Hanya Super Admin (Police) yang boleh akses.
+                                    </p>
+                                    <button class="btn btn-secondary disabled" aria-disabled="true">
+                                        <i class="bi bi-slash-circle me-2"></i>Akses Dibatasi
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
 
                 {{-- TABEL MONITORING (HANYA POLICE YANG BISA LIHAT) --}}
+                {{-- Staff tidak perlu lihat tabel ini sama sekali biar tidak penuh --}}
                 @if(Auth::user()->role == 'superadmin')
                 <div class="card mt-4 shadow-sm">
                     <div class="card-header bg-dark text-white">

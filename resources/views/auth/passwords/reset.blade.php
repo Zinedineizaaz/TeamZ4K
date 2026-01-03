@@ -1,60 +1,62 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
+@section('title', 'Buat Password Baru')
 
-                <div class="card-body">
+@section('content')
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mt-3">
+                
+                {{-- HEADER --}}
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <h4 class="fw-bold mb-0"><i class="bi bi-shield-lock-fill me-2"></i>Password Baru</h4>
+                    <small>Silakan buat password baru yang kuat.</small>
+                </div>
+
+                <div class="card-body p-4">
                     <form method="POST" action="{{ route('password.update') }}">
                         @csrf
-
+                        {{-- Token Wajib Ada (Hidden) --}}
                         <input type="hidden" name="token" value="{{ $token }}">
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+                        {{-- EMAIL (Readonly) --}}
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold text-muted small">Alamat Email</label>
+                            <input id="email" type="email" class="form-control bg-light" name="email" value="{{ $email ?? old('email') }}" required readonly>
+                            @error('email')
+                                <span class="text-danger small">{{ $message }}</span>
+                            @enderror
+                        </div>
 
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $email ?? old('email') }}" required autocomplete="email" autofocus>
+                        {{-- PASSWORD BARU --}}
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-bold">Password Baru</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-key text-danger"></i></span>
+                                <input id="password" type="password" class="form-control border-start-0 @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter">
+                            </div>
+                            @error('password')
+                                <span class="invalid-feedback d-block mt-1">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
 
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                        {{-- KONFIRMASI PASSWORD --}}
+                        <div class="mb-4">
+                            <label for="password-confirm" class="form-label fw-bold">Ulangi Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-check-circle text-success"></i></span>
+                                <input id="password-confirm" type="password" class="form-control border-start-0" name="password_confirmation" required autocomplete="new-password" placeholder="Ketik ulang password baru">
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Reset Password') }}
-                                </button>
-                            </div>
+                        {{-- TOMBOL SIMPAN --}}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning fw-bold py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-save-fill me-2"></i>SIMPAN PASSWORD BARU
+                            </button>
                         </div>
                     </form>
                 </div>

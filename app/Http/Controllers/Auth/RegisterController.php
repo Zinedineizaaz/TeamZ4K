@@ -8,54 +8,53 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
     use RegistersUsers;
 
-    /**
-     * Redirect default (cadangan)
-     */
-    protected $redirectTo = '/login';
+    // 1. SETELAH REGISTER, ARAHKAN KE PROFILE
+    protected $redirectTo = '/profile';
 
     public function __construct()
     {
         $this->middleware('guest');
     }
 
-    /**
-     * Validasi data register
-     */
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
     }
 
-    /**
-     * Simpan user baru (ROLE USER)
-     */
     protected function create(array $data)
     {
+        // 2. BUAT USER BARU (ROLE OTOMATIS 'user')
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => 'user', // 🔥 PENTING
+            'role' => 'user', // Default role
+            'last_login_at' => now(),
         ]);
     }
 
-    /**
-     * 🔑 KUNCI: setelah register → redirect ke LOGIN
-     */
-    protected function registered(Request $request, $user)
+    // 3. FORCE AUTO LOGIN SETELAH REGISTER
+    // Kita override fungsi register bawaan biar pasti login
+    public function register(Request $request)
     {
-        auth()->logout(); // pastikan TIDAK auto-login
+        $this->validator($request->all())->validate();
 
-        return redirect()->route('login')
-            ->with('success', 'Registrasi berhasil! Silakan login.');
+        $user = $this->create($request->all());
+
+        // Login otomatis
+        Auth::login($user);
+
+        // Redirect ke halaman profile dengan pesan sukses
+        return redirect($this->redirectPath())->with('status', 'Registrasi berhasil! Selamat datang di profil Anda.');
     }
 }

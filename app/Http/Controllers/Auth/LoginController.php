@@ -5,16 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Wajib import Auth
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
-
-    /**
-     * Redirect setelah login user biasa.
-     */
-    protected $redirectTo = '/';
 
     public function __construct()
     {
@@ -22,65 +17,60 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    /**
-     * Modifikasi Redirect setelah login sukses (Bawaan Laravel).
-     * Jika admin login lewat form biasa (/login), akan diarahkan kesini.
-     */
+    // --- LOGIKA 1: REDIRECT SESUAI ROLE ---
     public function redirectTo()
     {
         $role = Auth::user()->role; 
+        
+        // Kalau Admin/Police yang login
         if ($role == 'superadmin' || $role == 'admin') {
             return '/admin/dashboard';
         }
-        return '/'; 
+
+        // Kalau User biasa -> Ke Home (biar bisa langsung belanja)
+        return '/profile'; 
     }
 
+    // --- LOGIKA 2: CATAT WAKTU LOGIN ---
     protected function authenticated(Request $request, $user)
     {
+        // Update kolom last_login_at di database
         $user->last_login_at = now();
         $user->save();
     }
 
     // =========================================================
-    //       TAMBAHAN BARU: KHUSUS LOGIN ADMIN (/admin/login)
+    //       FITUR KHUSUS: LOGIN ADMIN (/admin/login)
+    //       (Tetap kita pertahankan kode yang tadi)
     // =========================================================
 
-    // 1. Tampilkan Form Login Khusus Admin
     public function showAdminLoginForm()
     {
         return view('auth.admin_login');
     }
 
-    // 2. Proses Login Admin
     public function loginAdmin(Request $request)
     {
-        // Validasi input
         $this->validate($request, [
             'email'   => 'required|email',
             'password' => 'required|min:6'
         ]);
 
-        // Coba Login
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            
-            // Cek Role: Apakah dia Admin atau Superadmin?
             $user = Auth::user();
 
+            // Cek apakah dia benar-benar admin?
             if ($user->role == 'superadmin' || $user->role == 'admin') {
-                // Update waktu login
                 $user->last_login_at = now();
                 $user->save();
-
-                // Sukses! Masuk ke Dashboard
                 return redirect()->intended('/admin/dashboard');
             }
 
-            // Kalau ternyata dia User Biasa yang iseng login lewat sini
+            // Kalau User biasa nyasar ke form admin
             Auth::logout();
-            return back()->with('error', 'Anda bukan Admin! Silakan login di halaman user.');
+            return back()->with('error', 'Anda bukan Admin! Silakan login di halaman user biasa.');
         }
 
-        // Kalau Email/Password salah
         return back()->withInput($request->only('email', 'remember'))->with('error', 'Email atau Password Admin salah!');
     }
 }

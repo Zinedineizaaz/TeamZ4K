@@ -14,6 +14,62 @@
 
     {{-- Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* === HANYA PERBAIKAN TOMBOL LOGIN & REGISTER === */
+        /* Kita asumsikan background navbar kamu MERAH sesuai style.css */
+
+        /* 1. Tombol Login (Outline Putih - Elegan) */
+        .btn-dimsai-login {
+            color: #fff !important;         /* Teks Putih */
+            border: 2px solid #fff;         /* Garis Pinggir Putih */
+            border-radius: 50px;            /* Bentuk Kapsul */
+            padding: 5px 20px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-dimsai-login:hover {
+            background-color: #fff;         /* Pas hover jadi Putih */
+            color: #d32f2f !important;      /* Teks jadi Merah */
+        }
+
+        /* 2. Tombol Register (Kuning - Menonjol) */
+        .btn-dimsai-register {
+            background-color: #ffc107;      /* Warna Kuning */
+            color: #000 !important;         /* Teks Hitam */
+            border: 2px solid #ffc107;
+            border-radius: 50px;            /* Bentuk Kapsul */
+            padding: 5px 20px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* Bayangan halus */
+        }
+        .btn-dimsai-register:hover {
+            background-color: #ffca2c;      /* Kuning lebih terang */
+            transform: translateY(-2px);    /* Efek naik dikit */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        /* 3. Dropdown Profile (Kapsul Transparan) */
+        .profile-trigger {
+            border: 1px solid rgba(255,255,255,0.5);
+            background-color: rgba(255,255,255,0.1);
+            color: #fff !important;
+            border-radius: 50px;
+            padding: 5px 15px 5px 5px; /* Padding khusus biar rapi */
+            transition: 0.3s;
+        }
+        .profile-trigger:hover {
+            background-color: rgba(255,255,255,0.2);
+            border-color: #fff;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,7 +82,7 @@
                 {{-- LOGO --}}
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
                     <img src="{{ asset('images/logoku.png') }}" alt="Dimsaykuu Logo" height="40">
-                    <span class="navbar-logo-text ms-2">Dimsaykuu</span>
+                    <span class="navbar-logo-text ms-2 text-white fw-bold">Dimsaykuu</span>
                 </a>
 
                 {{-- TOGGLER --}}
@@ -40,58 +96,79 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto align-items-center">
 
-                        {{-- MENU --}}
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/program') }}">Program</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/menu') }}">Menu</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/our-team') }}">Our Team</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/about') }}">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/contact-us') }}">Contact Us</a></li>
+                        {{-- MENU (TIDAK SAYA UBAH) --}}
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url('/') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url('/program') }}">Program</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url('/menu') }}">Menu</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url('/our-team') }}">Our Team</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url('/about') }}">About</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url('/contact-us') }}">Contact Us</a></li>
 
-                        {{-- ========== AUTH ========== --}}
+                        {{-- PEMBATAS (Garis Putih Tipis) --}}
+                        <div class="vr mx-3 d-none d-lg-block text-white opacity-50"></div>
+
+                        {{-- ========== BAGIAN TOMBOL CANTIK ========== --}}
                         @guest
-                            <li class="nav-item ms-3">
-                                <a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">
-                                    Login
+                            <li class="nav-item mb-2 mb-lg-0">
+                                <a class="btn-dimsai-login me-2" href="{{ route('login') }}">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
                                 </a>
                             </li>
-                            <li class="nav-item ms-2">
-                                <a class="btn btn-primary btn-sm" href="{{ route('register') }}">
-                                    Register
+                            <li class="nav-item">
+                                <a class="btn-dimsai-register" href="{{ route('register') }}">
+                                    <i class="bi bi-person-plus-fill me-2"></i>Register
                                 </a>
                             </li>
                         @endguest
 
                         @auth
-                            <li class="nav-item dropdown ms-3">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center"
+                            <li class="nav-item dropdown ms-lg-2">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center profile-trigger mt-2 mt-lg-0"
                                    href="#"
                                    role="button"
                                    data-bs-toggle="dropdown">
 
+                                    {{-- Avatar User --}}
                                     <img src="{{ Auth::user()->avatar
-                                        ? asset('storage/avatars/' . Auth::user()->avatar)
-                                        : asset('images/default-avatar.png') }}"
-                                        class="rounded-circle me-2"
-                                        width="32"
-                                        height="32"
-                                        style="object-fit: cover;">
+                                            ? asset('storage/' . Auth::user()->avatar)
+                                            : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=ffc107&color=000' }}"
+                                         class="rounded-circle me-2 border border-white"
+                                         width="32"
+                                         height="32"
+                                         style="object-fit: cover;">
 
-                                    {{ Auth::user()->name }}
+                                    {{-- Nama User --}}
+                                    <span class="fw-bold small">{{ explode(' ', Auth::user()->name)[0] }}</span>
                                 </a>
 
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                {{-- Isi Dropdown --}}
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('profile') }}">
-                                            Profile
-                                        </a>
+                                        <h6 class="dropdown-header text-danger fw-bold">
+                                            Halo, {{ explode(' ', Auth::user()->name)[0] }}! 👋
+                                        </h6>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
+                                    
+                                    {{-- Menu Admin (Cuma muncul kalo admin) --}}
+                                    @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
+                                        <li>
+                                            <a class="dropdown-item fw-bold text-danger" href="{{ url('/admin/dashboard') }}">
+                                                <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('profile') }}">
+                                            <i class="bi bi-person-circle me-2"></i>Profile Saya
+                                        </a>
+                                    </li>
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
                                             <button type="submit" class="dropdown-item text-danger">
-                                                Logout
+                                                <i class="bi bi-box-arrow-right me-2"></i>Logout
                                             </button>
                                         </form>
                                     </li>

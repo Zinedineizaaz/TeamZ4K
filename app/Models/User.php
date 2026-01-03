@@ -40,8 +40,8 @@ class User extends Authenticatable
      */
     
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'last_login_at' => 'datetime', // <--- Ini yang kamu tambahkan tadi (SUDAH BENAR)
-    ];
+    'email_verified_at' => 'datetime',
+    'last_login_at' => 'datetime',
+];
+
 }

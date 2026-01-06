@@ -57,4 +57,16 @@ public function sendPasswordResetNotification($token)
     $this->notify(new CustomResetPasswordNotification($token));
 }
 
+public function getJoinedDateAttribute()
+    {
+        return $this->created_at->format('d F Y, H:i'); // Contoh: 06 January 2026, 13:00
+    }
+
+    // Accessor: Bikin nama jadi huruf besar awal kata otomatis
+    // Cara panggil di blade: {{ $user->name }} (Otomatis rapi)
+    public function getNameAttribute($value)
+    {
+        return ucwords(strtolower($value));
+    }
+
 }

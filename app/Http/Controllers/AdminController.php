@@ -35,6 +35,26 @@ class AdminController extends Controller
         ));
     }
 
+    public function users(Request $request)
+    {
+        // Fitur Search & Pagination
+        $query = User::where('role', 'user');
+
+        // Kalau ada request 'search', kita filter query-nya
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Tampilkan 10 user per halaman (Paginate)
+        $users = $query->paginate(10); 
+
+        return view('admin.users_regular', compact('users'));
+    }
+
     /**
      * 2. HALAMAN KELOLA TIM ADMIN (Internal)
      * Hanya menampilkan Superadmin (Police) dan Admin (Staff)

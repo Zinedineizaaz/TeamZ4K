@@ -43,6 +43,12 @@
     </div>
     <br>
 
+    <form action="{{ route('admin.manage.users') }}" method="GET" class="d-flex mb-3">
+    <input type="text" name="search" class="form-control me-2" placeholder="Cari nama atau email..." value="{{ request('search') }}">
+    <button class="btn btn-primary" type="submit">Cari</button>
+</form>
+<br>
+
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <div class="card-header bg-primary text-white">
             <i class="bi bi-people-fill me-2"></i> Daftar User
@@ -56,8 +62,6 @@
                             <th>Email</th>
                             <th>Bergabung Sejak</th>
                             <th class="text-center">Status</th>
-                            
-                            {{-- KOLOM AKSI (HANYA MUNCUL UTK POLICE) --}}
                             @if(Auth::user()->role == 'superadmin')
                                 <th class="text-center">Aksi (Police)</th>
                             @endif
@@ -82,11 +86,11 @@
                                 <span class="badge bg-info text-dark border border-info px-3">User Aktif</span>
                             </td>
 
-                            {{-- TOMBOL HAPUS (HANYA MUNCUL UTK POLICE) --}}
                             @if(Auth::user()->role == 'superadmin')
                                 <td class="text-center">
+                                    {{-- Pastikan Route Delete ini benar --}}
                                     <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" 
-                                          onsubmit="return confirm('Yakin ingin MENGHAPUS user {{ $user->name }}? Data tidak bisa kembali!');">
+                                          onsubmit="return confirm('Yakin ingin MENGHAPUS user {{ $user->name }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus User">
@@ -99,14 +103,23 @@
                         @empty
                         <tr>
                             <td colspan="{{ Auth::user()->role == 'superadmin' ? '5' : '4' }}" class="text-center py-4 text-muted">
-                                Belum ada pelanggan mendaftar.
+                                <i class="bi bi-search display-4 d-block mb-3 text-secondary"></i>
+                                Tidak ada user yang ditemukan.
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
+            </div> {{-- Tutup table-responsive --}}
+        </div> {{-- Tutup card-body --}}
+        
+        {{-- PAGINATION PINDAH KESINI (DILUAR TABEL) --}}
+        <div class="card-footer bg-white py-3">
+             <div class="d-flex justify-content-center">
+                {{ $users->withQueryString()->links() }}
             </div>
         </div>
-    </div>
-</div>
+
+    </div> {{-- Tutup Card --}}
+</div> {{-- Tutup Container --}}
 @endsection

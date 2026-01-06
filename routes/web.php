@@ -65,7 +65,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('products', ProductController::class);
 
     // C. Kelola User / Pelanggan (Staff & Police)
-    Route::get('/manage-users', [AdminController::class, 'listUsers'])->name('manage.users');
+    Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
 
     // D. MENU KHUSUS POLICE / SUPERADMIN
     // Pastikan kamu punya middleware 'police' atau logic pengecekan role

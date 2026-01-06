@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+
+{{-- 1. SCRIPT WAJIB RECAPTCHA (Taro disini aja aman) --}}
+{!! NoCaptcha::renderJs() !!}
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-5">
@@ -38,6 +42,20 @@
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
+                        </div>
+
+                        {{-- 2. KOTAK CENTANG ROBOT (Ditaruh diatas tombol login) --}}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-center">
+                                {!! NoCaptcha::display() !!}
+                            </div>
+                            
+                            {{-- Pesan Error kalau lupa nyentang --}}
+                            @if ($errors->has('g-recaptcha-response'))
+                                <div class="text-danger small text-center mt-1">
+                                    <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="d-grid gap-2">

@@ -50,27 +50,30 @@ class LoginController extends Controller
     }
 
     public function loginAdmin(Request $request)
-    {
-        $this->validate($request, [
-            'email'   => 'required|email',
-            'password' => 'required|min:6'
-        ]);
+{
+    // 1. VALIDASI INPUT (Update Bagian Ini)
+    $this->validate($request, [
+        'email'   => 'required|email',
+        'password' => 'required|min:6',
+        'g-recaptcha-response' => 'required|captcha' // <--- INI TAMBAHAN WAJIBNYA
+    ], [
+        // Pesan Error Bahasa Manusia
+        'g-recaptcha-response.required' => 'Mohon centang verifikasi "Saya bukan robot".',
+        'g-recaptcha-response.captcha'  => 'Verifikasi robot gagal, silakan coba lagi.',
+    ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            $user = Auth::user();
-
-            // Cek apakah dia benar-benar admin?
-            if ($user->role == 'superadmin' || $user->role == 'admin') {
-                $user->last_login_at = now();
-                $user->save();
-                return redirect()->intended('/admin/dashboard');
-            }
-
-            // Kalau User biasa nyasar ke form admin
-            Auth::logout();
-            return back()->with('error', 'Anda bukan Admin! Silakan login di halaman user biasa.');
+    // 2. PROSES LOGIN (Biarkan kode di bawahnya tetap sama)
+    if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
+        
+        // Cek Role
+        if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin'){
+            return redirect()->route('admin.dashboard');
         }
-
-        return back()->withInput($request->only('email', 'remember'))->with('error', 'Email atau Password Admin salah!');
+        
+        Auth::logout();
+        return back()->with('error', 'Anda bukan Admin/Staff!');
     }
+
+    return back()->withInput($request->only('email', 'remember'))->with('error', 'Email atau Password salah!');
+}
 }

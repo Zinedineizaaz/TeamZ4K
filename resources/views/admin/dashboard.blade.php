@@ -15,12 +15,10 @@
                     </h1>
                     @if(Auth::user()->role == 'superadmin')
                         <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill">
-                            <i class="bi bi-shield-lock-fill me-1"></i> POLICE MODE
-                        </span>
+                            <i class="bi bi-shield-lock-fill me-1"></i> POLICE MODE</span>
                     @else
                         <span class="badge bg-secondary fs-6 px-3 py-2 rounded-pill">
-                            <i class="bi bi-person-badge-fill me-1"></i> STAFF ADMIN
-                        </span>
+                            <i class="bi bi-person-badge-fill me-1"></i> STAFF ADMIN</span>
                     @endif
                 </div>
 
@@ -68,48 +66,66 @@
 
                 <h3 class="dimsai-red mb-3">Aksi Cepat</h3>
 
+                {{-- UPDATE TERBARU: DIBAGI JADI 3 KOLOM AGAR RAPI --}}
                 <div class="row">
-                    {{-- KARTU 1: KELOLA PRODUK (SEMUA BISA KLIK) --}}
-                    <div class="col-md-6 mb-3">
+                    
+                    {{-- 1. KELOLA PRODUK (SEMUA BISA) --}}
+                    <div class="col-md-4 mb-3">
                         <div class="card bg-light h-100 border-start border-danger border-5">
                             <div class="card-body">
-                                <h5 class="card-title fw-bold">Kelola Produk Dimsum</h5>
-                                <p class="card-text text-secondary">
-                                    Tambah, lihat, edit, dan hapus menu dimsum yang tersedia.
+                                <h5 class="card-title fw-bold">Kelola Produk</h5>
+                                <p class="card-text text-secondary small">
+                                    Tambah & edit menu dimsum.
                                 </p>
-                                <a href="{{ route('admin.products.index') }}" class="btn btn-danger">
+                                <a href="{{ route('admin.products.index') }}" class="btn btn-danger btn-sm w-100">
                                     <i class="bi bi-box-seam me-2"></i>Akses Produk
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    {{-- KARTU 2: LIHAT ADMIN (VERSI GEMBOK UTK STAFF) --}}
-                    <div class="col-md-6 mb-3">
+                    {{-- 2. KELOLA PELANGGAN (STAFF & POLICE BISA) --}}
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light h-100 border-start border-primary border-5">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Data Pelanggan</h5>
+                                <p class="card-text text-secondary small">
+                                    Lihat user yang terdaftar.
+                                </p>
+                                <a href="{{ route('admin.manage.users') }}" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-people me-2"></i>Lihat Pelanggan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 3. KELOLA TIM ADMIN (KHUSUS POLICE) --}}
+                    <div class="col-md-4 mb-3">
                         @if(Auth::user()->role == 'superadmin')
                             {{-- TAMPILAN POLICE (AKTIF) --}}
                             <div class="card bg-light h-100 border-start border-dark border-5">
                                 <div class="card-body">
-                                    <h5 class="card-title fw-bold">Lihat Data Admin</h5>
-                                    <p class="card-text text-secondary">
-                                        Akses data Admin untuk melihat riwayat login tim.
+                                    <h5 class="card-title fw-bold">Tim Internal</h5>
+                                    <p class="card-text text-secondary small">
+                                        Pantau aktivitas Staff Admin.
                                     </p>
-                                    <a href="{{ route('admin.users') }}" class="btn btn-dark">
-                                        <i class="bi bi-people me-2"></i>Akses Admin (Police)
+                                    {{-- LINK INI SUDAH DIPERBAIKI --}}
+                                    <a href="{{ route('admin.manage.admins') }}" class="btn btn-dark btn-sm w-100">
+                                        <i class="bi bi-shield-lock me-2"></i>Akses Tim Admin
                                     </a>
                                 </div>
                             </div>
                         @else
-                            {{-- TAMPILAN STAFF (TERKUNCI / GEMBOK) --}}
+                            {{-- TAMPILAN STAFF (TERKUNCI) --}}
                             <div class="card bg-light h-100 border-start border-secondary border-5" style="opacity: 0.6;">
                                 <div class="card-body">
                                     <h5 class="card-title fw-bold text-muted">
-                                        <i class="bi bi-lock-fill me-1"></i> Lihat Data Admin
+                                        <i class="bi bi-lock-fill me-1"></i> Tim Internal
                                     </h5>
-                                    <p class="card-text text-muted">
-                                        Menu ini dikunci. Hanya Super Admin (Police) yang boleh akses.
+                                    <p class="card-text text-muted small">
+                                        Menu dikunci (Police Only).
                                     </p>
-                                    <button class="btn btn-secondary disabled" aria-disabled="true">
+                                    <button class="btn btn-secondary btn-sm w-100 disabled" aria-disabled="true">
                                         <i class="bi bi-slash-circle me-2"></i>Akses Dibatasi
                                     </button>
                                 </div>
@@ -119,11 +135,10 @@
                 </div>
 
                 {{-- TABEL MONITORING (HANYA POLICE YANG BISA LIHAT) --}}
-                {{-- Staff tidak perlu lihat tabel ini sama sekali biar tidak penuh --}}
                 @if(Auth::user()->role == 'superadmin')
                 <div class="card mt-4 shadow-sm">
                     <div class="card-header bg-dark text-white">
-                        <i class="bi bi-eye-fill me-2"></i> <strong>Monitoring Aktivitas Tim (Police View)</strong>
+                        <i class="bi bi-eye-fill me-2"></i> <strong>Monitoring Aktivitas Login (Police View)</strong>
                     </div>
                     <div class="card-body p-0">
                         <table class="table table-striped mb-0">
@@ -143,8 +158,10 @@
                                     <td>
                                         @if($user->role == 'superadmin')
                                             <span class="badge bg-danger">Police</span>
-                                        @else
+                                        @elseif($user->role == 'admin')
                                             <span class="badge bg-secondary">Staff</span>
+                                        @else
+                                            <span class="badge bg-info text-dark">User</span>
                                         @endif
                                     </td>
                                     <td>

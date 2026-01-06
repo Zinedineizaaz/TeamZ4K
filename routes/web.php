@@ -10,13 +10,15 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;      
 use App\Http\Controllers\User\ProfileController; 
 use App\Http\Controllers\Auth\LoginController;   
-
+use App\Http\Controllers\Auth\GoogleController; // Jangan lupa import
 /*
 |--------------------------------------------------------------------------
 | WEB ROUTES (FULL VERSION - FIXED DELETE)
 |--------------------------------------------------------------------------
 */
-
+// Route Login Google
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 // =====================
 // 1. HALAMAN PUBLIK
 // =====================

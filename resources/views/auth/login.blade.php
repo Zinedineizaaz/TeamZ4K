@@ -71,6 +71,14 @@
                                     </label>
                                 </div>
 
+                                <hr class="my-4">
+
+<div class="d-grid gap-2">
+    <a href="{{ route('google.login') }}" class="btn btn-outline-danger fw-bold">
+        <i class="bi bi-google me-2"></i> Masuk dengan Google
+    </a>
+</div>
+<br>
                                 {{-- Tombol Login --}}
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-danger py-2 fw-bold shadow-sm rounded-pill">

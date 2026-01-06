@@ -99,6 +99,13 @@
                         </li>
                         {{-- ================================== --}}
 
+                        <li class="nav-item">
+    <a class="nav-link" href="{{ route('admin.game.history') }}">
+        <i class="bi bi-controller"></i>
+        <span>Riwayat Game</span>
+    </a>
+</li>
+
                         {{-- 5. TOMBOL LOGOUT --}}
                         <li class="nav-item">
                             <a class="btn btn-sm btn-outline-light ms-lg-3 mt-1" href="{{ route('logout') }}"

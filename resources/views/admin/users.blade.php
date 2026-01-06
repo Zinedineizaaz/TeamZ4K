@@ -1,4 +1,4 @@
-@extends('admin.app_admin')
+@extends('layouts.admin')
 
 @section('title', 'Riwayat Admin Login')
 

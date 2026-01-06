@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;       // PENTING: Import Model User
 use App\Models\Product;    // PENTING: Import Model Product (Asumsi nama modelnya Product)
 use Illuminate\Support\Facades\Auth;
+use App\Models\GameHistory;
 
 class AdminController extends Controller
 {
@@ -35,6 +36,14 @@ class AdminController extends Controller
         ));
     }
 
+    public function gameHistory()
+{
+    // Ambil data history, urutkan dari yang terbaru
+    // 'with('user')' biar kita bisa ambil nama user tanpa query berulang (Eager Loading)
+    $histories = GameHistory::with('user')->latest()->get();
+
+    return view('admin.game.history', compact('histories'));
+}
     public function users(Request $request)
     {
         // Fitur Search & Pagination

@@ -90,6 +90,14 @@
                             </a>
                         </li>
                         @endif
+{{-- === TOMBOL BARU: LIHAT WEBSITE === --}}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold border border-warning rounded px-3 ms-2 me-2" 
+                               href="{{ url('/') }}" target="_blank">
+                                <i class="bi bi-globe me-1"></i> Lihat Website
+                            </a>
+                        </li>
+                        {{-- ================================== --}}
 
                         {{-- 5. TOMBOL LOGOUT --}}
                         <li class="nav-item">

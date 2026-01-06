@@ -48,87 +48,255 @@
     <hr class="mb-5">
 
     {{-- 3. Fitur Utama --}}
-    <h2 class="text-center mb-5" style="color: var(--dimsai-red);">Mengapa Memilih Dimsaykuu?</h2>
-    <div class="row text-center mb-5">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-3 mb-5 rounded-3 h-100" style="border-top: 5px solid var(--dimsai-yellow) !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: var(--dimsai-red);">Kualitas Terbaik</h5>
-                    <p class="card-text text-muted">Dimsum dibuat dari bahan-bahan segar pilihan dan proses yang higienis.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-3 mb-5 rounded-3 h-100" style="border-top: 5px solid var(--dimsai-yellow) !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: var(--dimsai-red);">Ragam Varian</h5>
-                    <p class="card-text text-muted">Pilihan menu dimsum bervariasi, dari klasik hingga inovatif.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-3 mb-5 rounded-3 h-100" style="border-top: 5px solid var(--dimsai-yellow) !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: var(--dimsai-red);">Harga Terjangkau</h5>
-                    <p class="card-text text-muted">Nikmati dimsum lezat tanpa perlu menguras dompet Anda.</p>
-                </div>
-            </div>
-        </div>
+    {{-- 4. SECTION KEUNGGULAN (Why Choose Us) --}}
+<div class="container mb-5 mt-5">
+    
+    {{-- Header Section --}}
+    {{-- Header Section --}}
+<div class="row"> {{-- Tambahkan row agar rapi seperti contoh 1 --}}
+    <div class="col-lg-10 offset-lg-1 text-center mb-5">
+        
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">KEUNGGULAN KAMI</span>
+        <h2 class="display-6 fw-bold" style="color: var(--dimsai-red);">
+            Kenapa Harus Dimsaykuu?
+        </h2>
+                    {{-- PERBAIKAN: Tambahkan class 'lead' agar teks paragraf lebih besar --}}
+        <p class="lead text-muted mx-auto">
+            Kami tidak hanya menjual rasa, tapi juga kualitas dan kepuasan di setiap gigitan.
+        </p>
+    {{-- PERBAIKAN: Tambahkan elemen garis kuning --}}
+        <div style="width: 100px; height: 5px; background-color: var(--dimsai-yellow); margin: 0 auto; border-radius: 5px;"></div>
+        
     </div>
+</div>
+
+    <div class="row g-4">
+        
+        {{-- Item 1: Kualitas --}}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 text-center py-4 px-3 bg-white">
+                <div class="card-body">
+                    {{-- Icon Bulat --}}
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle mb-4" 
+                         style="width: 80px; height: 80px;">
+                        <i class="bi bi-patch-check-fill display-5"></i>
+                    </div>
+                    
+                    <h4 class="card-title fw-bold mb-3">Kualitas Premium</h4>
+                    <p class="card-text text-muted">
+                        Dibuat dari daging ayam & udang segar pilihan. Tanpa pengawet, higienis, dan dijamin 100% Halal.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Item 2: Varian --}}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 text-center py-4 px-3 bg-white">
+                <div class="card-body">
+                    {{-- Icon Bulat --}}
+                    <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-4" 
+                         style="width: 80px; height: 80px;">
+                        <i class="bi bi-grid-fill display-5"></i>
+                    </div>
+
+                    <h4 class="card-title fw-bold mb-3">Ragam Varian</h4>
+                    <p class="card-text text-muted">
+                        Nggak cuma satu rasa! Ada Mozzarella, Mentai, Nori, hingga Udang Rambutan yang siap manjakan lidahmu.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Item 3: Harga --}}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 text-center py-4 px-3 bg-white">
+                <div class="card-body">
+                    {{-- Icon Bulat --}}
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-4" 
+                         style="width: 80px; height: 80px;">
+                        <i class="bi bi-wallet2 display-5"></i>
+                    </div>
+
+                    <h4 class="card-title fw-bold mb-3">Harga Mahasiswa</h4>
+                    <p class="card-text text-muted">
+                        Rasa bintang lima, harga kaki lima. Nikmati kemewahan rasa dimsum tanpa bikin dompet menangis.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 
     {{-- ========================================== --}}
     {{-- BAGIAN 2: TAMBAHAN BARU (BIAR SCROLLABLE) --}}
     {{-- ========================================== --}}
 
-    
+    {{-- 5. SECTION TESTIMONI (Versi Bootstrap Murni) --}}
+<div class="container mb-5 mt-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-2">REVIEW JUJUR</span>
+        {{-- Gunakan text-danger bawaan bootstrap biar merah --}}
+        <h2 class="display-7 fw-bold" style="color: var(--dimsai-red);">
+            Apa Kata Dimsum Lovers? 💬
+        </h2>
 
-    {{-- 5. SECTION TESTIMONI (Apa Kata Mereka) --}}
-    <div class="container mb-5">
-        <h2 class="text-center mb-4" style="color: var(--dimsai-red);">Kata Mereka Tentang Dimsaykuu 💬</h2>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card p-3 border-start border-4 border-warning shadow-sm">
-                    <figure class="mb-0">
-                        <blockquote class="blockquote">
-                            <p class="fs-6 text-muted">"Gila sih, ini dimsum terenak yang pernah gue coba di sekitaran kampus. Harganya pas banget buat mahasiswa!"</p>
-                        </blockquote>
-                        <figcaption class="blockquote-footer mb-0">
-                            Budi Santoso, <cite title="Source Title">Mahasiswa Teknik</cite>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card p-3 border-start border-4 border-warning shadow-sm">
-                    <figure class="mb-0">
-                        <blockquote class="blockquote">
-                            <p class="fs-6 text-muted">"Suka banget sama saus mentainya, creamy tapi nggak bikin eneg. Fix bakal langganan terus!"</p>
-                        </blockquote>
-                        <figcaption class="blockquote-footer mb-0">
-                            Siti Aminah, <cite title="Source Title">Ibu Rumah Tangga</cite>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-        </div>
+        <p class="text-muted">Jangan percaya kami, percaya kata perut mereka.</p>
     </div>
 
-    {{-- 6. SECTION LOKASI & JAM BUKA --}}
-    <div class="row align-items-center bg-dark text-white p-5 rounded-3 shadow-lg" style="background: linear-gradient(45deg, #1a1a1a, #2c2c2c);">
+    <div class="row g-4">
+        {{-- Testimoni 1 --}}
         <div class="col-md-6">
-            <h3 class="fw-bold text-warning mb-3">Kunjungi Outlet Kami! 📍</h3>
-            <p>Mau makan di tempat atau take-away? Langsung aja gas ke lokasi kami.</p>
-            <ul class="list-unstyled mt-3">
-                <li class="mb-2"><i class="bi bi-geo-alt-fill text-danger me-2"></i> Jl. Jeruk Purut Samping Kopi Posko</li>
-                <li class="mb-2"><i class="bi bi-clock-fill text-danger me-2"></i> Buka Setiap Hari: 10.00 - 22.00 WIB</li>
-                <li class="mb-2"><i class="bi bi-whatsapp text-danger me-2"></i> 0812-3456-7890</li>
-            </ul>
+            {{-- Pakai shadow-sm dan border-0 bawaan bootstrap --}}
+            <div class="card h-100 border-0 shadow-sm rounded-4 bg-light">
+                <div class="card-body p-4 position-relative">
+                    {{-- Icon Quote Besar di pojok --}}
+                    <i class="bi bi-quote display-1 text-danger position-absolute top-0 end-0 opacity-25 me-3"></i>
+                    
+                    {{-- Rating Bintang --}}
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    
+                    <p class="card-text fs-5 fst-italic text-dark mb-4 position-relative">
+                        "Gila sih, ini dimsum terenak yang pernah gue coba di sekitaran kampus. Isiannya padet, kulitnya lembut, harganya pas banget buat mahasiswa!"
+                    </p>
+
+                    <div class="d-flex align-items-center mt-auto border-top pt-3">
+                        {{-- Avatar pakai class rounded-circle --}}
+                        <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=dc3545&color=fff" 
+                             class="rounded-circle me-3" 
+                             style="width: 50px; height: 50px;" alt="Budi">
+                        <div>
+                            <h6 class="fw-bold mb-0">Budi Santoso</h6>
+                            <small class="text-muted">Mahasiswa Teknik</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 text-center">
-            {{-- Gambar Peta Ilustrasi --}}
-            <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&q=80&w=600&h=300" class="img-fluid rounded-3 opacity-75" alt="Map Location">
-            <a href="https://maps.google.com" target="_blank" class="btn btn-danger mt-3 fw-bold">Buka Google Maps</a>
+
+        {{-- Testimoni 2 --}}
+        <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4 bg-light">
+                <div class="card-body p-4 position-relative">
+                    <i class="bi bi-quote display-1 text-danger position-absolute top-0 end-0 opacity-25 me-3"></i>
+                    
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                    </div>
+
+                    <p class="card-text fs-5 fst-italic text-dark mb-4 position-relative">
+                        "Suka banget sama saus mentainya, creamy tapi nggak bikin eneg. Packagingnya juga rapi banget, aman dibawa pulang. Fix langganan!"
+                    </p>
+
+                    <div class="d-flex align-items-center mt-auto border-top pt-3">
+                        <img src="https://ui-avatars.com/api/?name=Siti+Aminah&background=ffc107&color=000" 
+                             class="rounded-circle me-3" 
+                             style="width: 50px; height: 50px;" alt="Siti">
+                        <div>
+                            <h6 class="fw-bold mb-0">Siti Aminah</h6>
+                            <small class="text-muted">Ibu Rumah Tangga</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+{{-- 6. SECTION LOKASI & JAM BUKA (Bootstrap Dark Mode) --}}
+<div class="container mb-5">
+    {{-- Container Utama: Background Dark Gradient & Shadow --}}
+    <div class="bg-dark bg-gradient text-white p-5 rounded-4 shadow">
+        <div class="row align-items-center">
+            
+            {{-- ==========================
+                 KOLOM KIRI: INFORMASI TEKS
+                 ========================== --}}
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="fw-bold mb-3 text-warning">
+                    <i class="bi bi-shop me-2"></i>Outlet Pusat
+                </h2>
+                <p class="lead mb-4 text-secondary text-white-50">
+                    Lapar? Mampir langsung atau pesan online, kami siap melayani perut keronconganmu.
+                </p>
+                
+                {{-- List Informasi --}}
+                <div class="d-flex flex-column gap-3">
+                    
+                    {{-- Item 1: Alamat --}}
+                    <div class="d-flex align-items-center p-3 rounded-3 bg-white bg-opacity-10">
+                        <i class="bi bi-geo-alt-fill text-danger fs-3 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-warning">Alamat</h6>
+                            <p class="mb-0 small">Jl. Jeruk Purut No. 88 (Samping Kopi Posko)</p>
+                        </div>
+                    </div>
+
+                    {{-- Item 2: Jam Buka --}}
+                    <div class="d-flex align-items-center p-3 rounded-3 bg-white bg-opacity-10">
+                        <i class="bi bi-clock-fill text-danger fs-3 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-warning">Jam Operasional</h6>
+                            <p class="mb-0 small">Senin - Minggu: 10.00 - 22.00 WIB</p>
+                        </div>
+                    </div>
+
+                    {{-- Item 3: WhatsApp --}}
+                    <div class="d-flex align-items-center p-3 rounded-3 bg-white bg-opacity-10">
+                        <i class="bi bi-whatsapp text-danger fs-3 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-warning">WhatsApp Order</h6>
+                            <p class="mb-0 small">0812-3456-7890</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tombol Buka Maps (Tab Baru) --}}
+                <a href="https://www.google.com/maps/search/?api=1&query=Kopi+Posko+Jeruk+Purut" 
+                   target="_blank" 
+                   class="btn btn-outline-warning mt-4 rounded-pill px-4 fw-bold w-100">
+                    <i class="bi bi-map-fill me-2"></i> Petunjuk Arah (G-Maps)
+                </a>
+            </div>
+
+            {{-- ==========================
+                 KOLOM KANAN: PETA EMBED ASLI
+                 ========================== --}}
+            <div class="col-lg-6">
+                {{-- Bingkai Kuning & Rounded --}}
+                <div class="border border-2 border-warning rounded-4 overflow-hidden shadow h-100" style="min-height: 400px;">
+                    
+                    {{-- IFRAME GOOGLE MAPS (Lokasi: Kopi Posko Jeruk Purut) --}}
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        id="gmap_canvas" 
+                        src="https://maps.google.com/maps?q=Kopi+Posko+Jeruk+Purut+Jakarta&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        marginheight="0" 
+                        marginwidth="0"
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
+
+                </div>
+            </div>
+
+        </div> {{-- End Row --}}
+    </div> {{-- End Dark Box --}}
+</div> {{-- End Container --}}
 
 @endsection

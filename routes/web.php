@@ -71,6 +71,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Pastikan kamu punya middleware 'police' atau logic pengecekan role
     Route::middleware(['police'])->group(function () {
         
+    
+        // 1. Lihat Sampah
+        Route::get('/users/trash', [AdminController::class, 'trashUsers'])->name('users.trash');
+        
+        // 2. Aksi Restore
+        Route::get('/users/restore/{id}', [AdminController::class, 'restoreUser'])->name('users.restore');
         // 1. Lihat daftar Admin lain
         Route::get('/manage-admins', [AdminController::class, 'listAdmins'])->name('manage.admins');
         

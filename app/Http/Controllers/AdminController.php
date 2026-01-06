@@ -67,23 +67,49 @@ class AdminController extends Controller
      */
     public function destroyUser($id)
     {
-        // Cari user berdasarkan ID
-        $user = User::findOrFail($id);
+        $targetUser = User::findOrFail($id);
 
-        // Cek keamanan: Jangan sampai Police menghapus dirinya sendiri
-        if ($user->id == Auth::id()) {
-            return back()->with('error', 'Anda tidak bisa menghapus akun sendiri!');
+        // --- CARA LAMA (MANUAL) ---
+        // if (Auth::user()->role != 'superadmin') { ... }
+        
+        // --- CARA BARU (PAKAI POLICY) ---
+        // Kita tanya ke Laravel: "Apakah user yg login CAN (BISA) delete targetUser?"
+        if (Auth::user()->cannot('delete', $targetUser)) {
+            return back()->with('error', 'AKSES DITOLAK: Kebijakan sistem melarang tindakan ini.');
         }
 
-        // Cek keamanan: Jangan hapus sesama admin lewat menu ini
-        if ($user->role != 'user') {
-            return back()->with('error', 'Hanya User biasa yang boleh dihapus dari sini!');
-        }
+        // Kalau lolos pengecekan di atas, baru hapus
+        $targetUser->delete();
 
-        // Lakukan penghapusan
-        $user->delete();
+        return back()->with('success', 'User berhasil dihapus sesuai Policy.');
+    }
 
-        // Kembali ke halaman sebelumnya dengan pesan sukses
-        return back()->with('success', 'User ' . $user->name . ' berhasil dihapus dari sistem.');
+    /**
+     * 5. HALAMAN SAMPAH (Lihat User yang Dihapus)
+     */
+    public function trashUsers()
+    {
+        // Ambil user yang sudah dihapus (onlyTrashed)
+        // Dan pastikan cuma role 'user' yang diambil
+        $deletedUsers = User::onlyTrashed()
+                            ->where('role', 'user')
+                            ->orderBy('deleted_at', 'desc')
+                            ->get();
+
+        return view('admin.users_trash', compact('deletedUsers'));
+    }
+
+    /**
+     * 6. RESTORE USER (Balikin User)
+     */
+    public function restoreUser($id)
+    {
+        // Cari user di tong sampah (withTrashed)
+        $user = User::withTrashed()->findOrFail($id);
+
+        // Balikin dia!
+        $user->restore();
+
+        return back()->with('success', 'Data user ' . $user->name . ' berhasil dikembalikan (Restore).');
     }
 }

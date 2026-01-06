@@ -26,6 +26,23 @@
         <span class="badge bg-primary rounded-pill fs-6 px-3">Total: {{ $users->count() }}</span>
     </div>
 
+<div class="d-flex gap-2">
+            {{-- BUTTON AKSES SAMPAH (HANYA POLICE) --}}
+            @if(Auth::user()->role == 'superadmin')
+                <a href="{{ route('admin.users.trash') }}" class="btn btn-outline-secondary position-relative">
+                    <i class="bi bi-trash me-1"></i> Tong Sampah
+                    {{-- Opsional: Badge jumlah sampah --}}
+                    {{-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">!</span> --}}
+                </a>
+            @endif
+            
+            <span class="badge bg-primary rounded-pill fs-6 px-3 d-flex align-items-center">
+                Total: {{ $users->count() }}
+            </span>
+        </div>
+    </div>
+    <br>
+
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <div class="card-header bg-primary text-white">
             <i class="bi bi-people-fill me-2"></i> Daftar User

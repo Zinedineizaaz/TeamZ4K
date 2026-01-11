@@ -55,11 +55,11 @@ class LoginController extends Controller
     $this->validate($request, [
         'email'   => 'required|email',
         'password' => 'required|min:6',
-        'g-recaptcha-response' => 'required|captcha' // <--- INI TAMBAHAN WAJIBNYA
-    ], [
-        // Pesan Error Bahasa Manusia
-        'g-recaptcha-response.required' => 'Mohon centang verifikasi "Saya bukan robot".',
-        'g-recaptcha-response.captcha'  => 'Verifikasi robot gagal, silakan coba lagi.',
+    //     'g-recaptcha-response' => 'required|captcha' // <--- INI TAMBAHAN WAJIBNYA
+    // ], [
+    //     // Pesan Error Bahasa Manusia
+    //     'g-recaptcha-response.required' => 'Mohon centang verifikasi "Saya bukan robot".',
+    //     'g-recaptcha-response.captcha'  => 'Verifikasi robot gagal, silakan coba lagi.',
     ]);
 
     // 2. PROSES LOGIN (Biarkan kode di bawahnya tetap sama)

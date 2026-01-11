@@ -38,10 +38,20 @@
             
             <span class="badge bg-primary rounded-pill fs-6 px-3 d-flex align-items-center">
                 Total: {{ $users->count() }}
+                
             </span>
         </div>
     </div>
     <br>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold">...</h4> {{-- TOMBOL CETAK --}}
+    <a href="{{ route('admin.users.print') }}" target="_blank" class="btn btn-dark">
+        <i class="bi bi-printer-fill me-2"></i> Cetak Laporan
+    </a>
+</div>
+
+<br>
 
     <form action="{{ route('admin.manage.users') }}" method="GET" class="d-flex mb-3">
     <input type="text" name="search" class="form-control me-2" placeholder="Cari nama atau email..." value="{{ request('search') }}">

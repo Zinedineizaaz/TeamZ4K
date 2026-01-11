@@ -82,6 +82,18 @@ class AdminController extends Controller
      * 3. HALAMAN KELOLA USER (Pelanggan)
      * Hanya menampilkan User biasa
      */
+
+    public function printUsers()
+{
+    // Ambil semua user (termasuk yang di tong sampah kalau mau, atau yang aktif aja)
+    // Di sini kita ambil semua yang aktif
+    $users = User::all();
+    
+    // Tampilkan view khusus cetak (bukan dashboard biasa)
+    return view('admin.users_print', compact('users'));
+}
+
+
     public function listUsers()
     {
         // Ambil user yang role-nya CUMA 'user'

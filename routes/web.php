@@ -87,6 +87,7 @@ Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game
 
     // C. Kelola User / Pelanggan (Staff & Police)
     Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
+    Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
     // D. MENU KHUSUS POLICE / SUPERADMIN
     // Middleware 'police' membatasi akses khusus superadmin

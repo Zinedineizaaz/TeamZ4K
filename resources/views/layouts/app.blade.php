@@ -16,14 +16,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        /* === HANYA PERBAIKAN TOMBOL LOGIN & REGISTER === */
-        /* Kita asumsikan background navbar kamu MERAH sesuai style.css */
-
-        /* 1. Tombol Login (Outline Putih - Elegan) */
+        /* === STYLE TOMBOL LOGIN & REGISTER ANDA === */
         .btn-dimsai-login {
-            color: #fff !important;         /* Teks Putih */
-            border: 2px solid #fff;         /* Garis Pinggir Putih */
-            border-radius: 50px;            /* Bentuk Kapsul */
+            color: #fff !important;
+            border: 2px solid #fff;
+            border-radius: 50px;
             padding: 5px 20px;
             font-weight: 600;
             text-decoration: none;
@@ -32,37 +29,35 @@
             align-items: center;
         }
         .btn-dimsai-login:hover {
-            background-color: #fff;         /* Pas hover jadi Putih */
-            color: #d32f2f !important;      /* Teks jadi Merah */
+            background-color: #fff;
+            color: #d32f2f !important;
         }
 
-        /* 2. Tombol Register (Kuning - Menonjol) */
         .btn-dimsai-register {
-            background-color: #ffc107;      /* Warna Kuning */
-            color: #000 !important;         /* Teks Hitam */
+            background-color: #ffc107;
+            color: #000 !important;
             border: 2px solid #ffc107;
-            border-radius: 50px;            /* Bentuk Kapsul */
+            border-radius: 50px;
             padding: 5px 20px;
             font-weight: 700;
             text-decoration: none;
             transition: 0.3s;
             display: inline-flex;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* Bayangan halus */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
         .btn-dimsai-register:hover {
-            background-color: #ffca2c;      /* Kuning lebih terang */
-            transform: translateY(-2px);    /* Efek naik dikit */
+            background-color: #ffca2c;
+            transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
-        /* 3. Dropdown Profile (Kapsul Transparan) */
         .profile-trigger {
             border: 1px solid rgba(255,255,255,0.5);
             background-color: rgba(255,255,255,0.1);
             color: #fff !important;
             border-radius: 50px;
-            padding: 5px 15px 5px 5px; /* Padding khusus biar rapi */
+            padding: 5px 15px 5px 5px;
             transition: 0.3s;
         }
         .profile-trigger:hover {
@@ -96,7 +91,6 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto align-items-center">
 
-                        {{-- MENU (TIDAK SAYA UBAH) --}}
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url('/') }}">Home</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url('/program') }}">Program</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url('/menu') }}">Menu</a></li>
@@ -104,10 +98,9 @@
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url('/about') }}">About</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url('/contact-us') }}">Contact Us</a></li>
 
-                        {{-- PEMBATAS (Garis Putih Tipis) --}}
                         <div class="vr mx-3 d-none d-lg-block text-white opacity-50"></div>
 
-                        {{-- ========== BAGIAN TOMBOL CANTIK ========== --}}
+                        {{-- ========== AUTH GUEST ========== --}}
                         @guest
                             <li class="nav-item mb-2 mb-lg-0">
                                 <a class="btn-dimsai-login me-2" href="{{ route('login') }}">
@@ -121,6 +114,7 @@
                             </li>
                         @endguest
 
+                        {{-- ========== AUTH USER ========== --}}
                         @auth
                             <li class="nav-item dropdown ms-lg-2">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center profile-trigger mt-2 mt-lg-0"
@@ -150,7 +144,6 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     
-                                    {{-- Menu Admin (Cuma muncul kalo admin) --}}
                                     @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
                                         <li>
                                             <a class="dropdown-item fw-bold text-danger" href="{{ url('/admin/dashboard') }}">
@@ -161,9 +154,18 @@
 
                                     <li>
                                         <a class="dropdown-item" href="{{ route('profile') }}">
-                                            <i class="bi bi-person-circle me-2"></i>Profile Saya
+                                            <i class="bi bi-person-circle me-2 text-danger"></i>Profile Saya
                                         </a>
                                     </li>
+
+                                    {{-- MENU TAMBAHAN: RIWAYAT PESANAN --}}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('profile.history') }}">
+                                            <i class="bi bi-clock-history me-2 text-danger"></i>Riwayat Pesanan
+                                        </a>
+                                    </li>
+
+                                    <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
@@ -175,7 +177,6 @@
                                 </ul>
                             </li>
                         @endauth
-                        {{-- ========== END AUTH ========== --}}
 
                     </ul>
                 </div>

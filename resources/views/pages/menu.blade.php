@@ -4,8 +4,18 @@
 
 @section('content')
     <div class="container py-5">
+        {{-- BAGIAN HEADER & NOTIFIKASI ERROR --}}
         <div class="text-center mb-5">
             <h1 class="fw-bold text-danger">MENU KAMI</h1>
+            
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mx-auto" style="max-width: 600px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            
             <p class="text-muted">Nikmati kelezatan dimsum pilihan Dimsaykuu</p>
             <hr class="mx-auto" style="width: 60px; border-top: 3px solid #dc3545;">
         </div>
@@ -37,16 +47,21 @@
                         </div>
 
                         <div class="card-footer bg-white border-0 pb-3">
-                            {{-- Link ke WhatsApp untuk pemesanan langsung --}}
-                            <a href="https://wa.me/628123456789?text=Halo%20Dimsaykuu,%20saya%20ingin%20pesan%20{{ urlencode($product->name) }}"
-                                class="btn btn-danger w-100 fw-bold" target="_blank">
-                                <i class="bi bi-whatsapp me-2"></i>Pesan Sekarang
-                            </a>
+                            {{-- FORM CHECKOUT MIDTRANS --}}
+                            <form action="{{ route('checkout') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                {{-- Gunakan (int) untuk memastikan harga adalah angka murni --}}
+                                <input type="hidden" name="price" value="{{ (int)$product->price }}">
+                                
+                                <button type="submit" class="btn btn-danger w-100 fw-bold shadow-sm rounded-pill">
+                                    <i class="bi bi-cart-check-fill me-2"></i>Pesan Sekarang
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             @empty
-                {{-- Tampilan jika admin belum menginput produk --}}
                 <div class="col-12 text-center my-5">
                     <p class="lead text-muted">Belum ada menu yang tersedia saat ini.</p>
                 </div>

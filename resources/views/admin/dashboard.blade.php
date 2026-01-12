@@ -31,30 +31,73 @@
 
                 <hr class="my-4">
 
-                {{-- STATISTIK RINGKAS --}}
+                {{-- STATISTIK FINANSIAL (UPDATE BARU) --}}
+                <h4 class="fw-bold mb-3 text-dark"><i class="bi bi-cash-stack me-2"></i>Ringkasan Keuangan</h4>
                 <div class="row mb-4">
-                    {{-- Stat Produk --}}
+                    {{-- Omzet --}}
                     <div class="col-md-4">
-                        <div class="card text-white bg-danger mb-3 shadow-sm h-100">
+                        <div class="card text-white bg-success mb-3 shadow-sm h-100 border-0">
+                            <div class="card-body">
+                                <h6 class="card-title text-uppercase small">Total Omset (PAID)</h6>
+                                <p class="card-text display-6 fw-bold">Rp {{ number_format($total_omset, 0, ',', '.') }}</p>
+                                <small><i class="bi bi-check-circle-fill"></i> Dari {{ $pesanan_berhasil }} transaksi sukses</small>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Pesanan Sukses --}}
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary mb-3 shadow-sm h-100 border-0">
+                            <div class="card-body">
+                                <h6 class="card-title text-uppercase small">Pesanan Berhasil</h6>
+                                <p class="card-text display-6 fw-bold">{{ $pesanan_berhasil }}</p>
+                                <small>Total transaksi selesai</small>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Pesanan Pending --}}
+                    <div class="col-md-4">
+                        <div class="card text-dark bg-info mb-3 shadow-sm h-100 border-0">
+                            <div class="card-body">
+                                <h6 class="card-title text-uppercase small">Pesanan Pending</h6>
+                                <p class="card-text display-6 fw-bold">{{ $pesanan_pending }}</p>
+                                <small>Menunggu konfirmasi Xendit</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- GRAFIK ANALITIK (UPDATE BARU) --}}
+                <div class="card border-0 shadow-sm mb-5" style="background-color: #f8f9fa;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4"><i class="bi bi-graph-up-arrow me-2 text-danger"></i>Tren Penjualan (7 Hari Terakhir)</h5>
+                        <div style="height: 300px;">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- STATISTIK INVENTARIS (LAMA) --}}
+                <h4 class="fw-bold mb-3 text-dark"><i class="bi bi-archive me-2"></i>Inventaris & User</h4>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-danger mb-3 shadow-sm h-100 border-0">
                             <div class="card-body">
                                 <h5 class="card-title"><i class="bi bi-box-seam"></i> Total Produk</h5>
                                 <p class="card-text display-6 fw-bold">{{ $total_products }}</p>
                             </div>
                         </div>
                     </div>
-                    {{-- Stat Stok --}}
                     <div class="col-md-4">
-                        <div class="card text-dark bg-warning mb-3 shadow-sm h-100">
+                        <div class="card text-dark bg-warning mb-3 shadow-sm h-100 border-0">
                             <div class="card-body">
                                 <h5 class="card-title"><i class="bi bi-layers"></i> Total Stok</h5>
                                 <p class="card-text display-6 fw-bold">{{ $total_stock }}</p>
                             </div>
                         </div>
                     </div>
-                    {{-- Stat User (Hanya Police) --}}
                     @if(Auth::user()->role == 'superadmin')
                     <div class="col-md-4">
-                        <div class="card text-white bg-dark mb-3 shadow-sm h-100">
+                        <div class="card text-white bg-dark mb-3 shadow-sm h-100 border-0">
                             <div class="card-body">
                                 <h5 class="card-title"><i class="bi bi-people"></i> Total User</h5>
                                 <p class="card-text display-6 fw-bold">{{ $total_users }}</p>
@@ -66,66 +109,48 @@
 
                 <h3 class="dimsai-red mb-3">Aksi Cepat</h3>
 
-                {{-- UPDATE TERBARU: DIBAGI JADI 3 KOLOM AGAR RAPI --}}
                 <div class="row">
-                    
-                    {{-- 1. KELOLA PRODUK (SEMUA BISA) --}}
                     <div class="col-md-4 mb-3">
-                        <div class="card bg-light h-100 border-start border-danger border-5">
+                        <div class="card bg-light h-100 border-start border-danger border-5 border-0 shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">Kelola Produk</h5>
-                                <p class="card-text text-secondary small">
-                                    Tambah & edit menu dimsum.
-                                </p>
-                                <a href="{{ route('admin.products.index') }}" class="btn btn-danger btn-sm w-100">
+                                <p class="card-text text-secondary small">Tambah & edit menu dimsum.</p>
+                                <a href="{{ route('admin.products.index') }}" class="btn btn-danger btn-sm w-100 rounded-pill">
                                     <i class="bi bi-box-seam me-2"></i>Akses Produk
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    {{-- 2. KELOLA PELANGGAN (STAFF & POLICE BISA) --}}
                     <div class="col-md-4 mb-3">
-                        <div class="card bg-light h-100 border-start border-primary border-5">
+                        <div class="card bg-light h-100 border-start border-primary border-5 border-0 shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">Data Pelanggan</h5>
-                                <p class="card-text text-secondary small">
-                                    Lihat user yang terdaftar.
-                                </p>
-                                <a href="{{ route('admin.manage.users') }}" class="btn btn-primary btn-sm w-100">
+                                <p class="card-text text-secondary small">Lihat user yang terdaftar.</p>
+                                <a href="{{ route('admin.manage.users') }}" class="btn btn-primary btn-sm w-100 rounded-pill">
                                     <i class="bi bi-people me-2"></i>Lihat Pelanggan
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    {{-- 3. KELOLA TIM ADMIN (KHUSUS POLICE) --}}
                     <div class="col-md-4 mb-3">
                         @if(Auth::user()->role == 'superadmin')
-                            {{-- TAMPILAN POLICE (AKTIF) --}}
-                            <div class="card bg-light h-100 border-start border-dark border-5">
+                            <div class="card bg-light h-100 border-start border-dark border-5 border-0 shadow-sm">
                                 <div class="card-body">
                                     <h5 class="card-title fw-bold">Tim Internal</h5>
-                                    <p class="card-text text-secondary small">
-                                        Pantau aktivitas Staff Admin.
-                                    </p>
-                                    {{-- LINK INI SUDAH DIPERBAIKI --}}
-                                    <a href="{{ route('admin.manage.admins') }}" class="btn btn-dark btn-sm w-100">
+                                    <p class="card-text text-secondary small">Pantau aktivitas Staff Admin.</p>
+                                    <a href="{{ route('admin.manage.admins') }}" class="btn btn-dark btn-sm w-100 rounded-pill">
                                         <i class="bi bi-shield-lock me-2"></i>Akses Tim Admin
                                     </a>
                                 </div>
                             </div>
                         @else
-                            {{-- TAMPILAN STAFF (TERKUNCI) --}}
-                            <div class="card bg-light h-100 border-start border-secondary border-5" style="opacity: 0.6;">
+                            <div class="card bg-light h-100 border-start border-secondary border-5 border-0 shadow-sm" style="opacity: 0.6;">
                                 <div class="card-body">
-                                    <h5 class="card-title fw-bold text-muted">
-                                        <i class="bi bi-lock-fill me-1"></i> Tim Internal
-                                    </h5>
-                                    <p class="card-text text-muted small">
-                                        Menu dikunci (Police Only).
-                                    </p>
-                                    <button class="btn btn-secondary btn-sm w-100 disabled" aria-disabled="true">
+                                    <h5 class="card-title fw-bold text-muted"><i class="bi bi-lock-fill me-1"></i> Tim Internal</h5>
+                                    <p class="card-text text-muted small">Menu dikunci (Police Only).</p>
+                                    <button class="btn btn-secondary btn-sm w-100 disabled rounded-pill">
                                         <i class="bi bi-slash-circle me-2"></i>Akses Dibatasi
                                     </button>
                                 </div>
@@ -134,15 +159,14 @@
                     </div>
                 </div>
 
-                {{-- TABEL MONITORING (HANYA POLICE YANG BISA LIHAT) --}}
                 @if(Auth::user()->role == 'superadmin')
-                <div class="card mt-4 shadow-sm">
-                    <div class="card-header bg-dark text-white">
+                <div class="card mt-4 shadow-sm border-0">
+                    <div class="card-header bg-dark text-white rounded-top">
                         <i class="bi bi-eye-fill me-2"></i> <strong>Monitoring Aktivitas Login (Police View)</strong>
                     </div>
                     <div class="card-body p-0">
-                        <table class="table table-striped mb-0">
-                            <thead>
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Nama</th>
                                     <th>Email</th>
@@ -164,9 +188,7 @@
                                             <span class="badge bg-info text-dark">User</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : 'Belum Login' }}
-                                    </td>
+                                    <td>{{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : 'Belum Login' }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -175,7 +197,6 @@
                 </div>
                 @endif
                 
-                {{-- FOOTER KECIL --}}
                 <p class="mt-4 text-end">
                     <small class="text-secondary">
                         Sistem Dimsaykuu v1.0 &bull; Role Anda: <strong>{{ ucfirst(Auth::user()->role) }}</strong>
@@ -185,4 +206,55 @@
             </div>
         </div>
     </div>
+
+    {{-- SCRIPTS UNTUK CHART.JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            
+            // Mengambil data dari variabel PHP yang dikirim controller
+            const labels = {!! json_encode($sales_data->pluck('date')) !!};
+            const dataOmset = {!! json_encode($sales_data->pluck('total')) !!};
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Penjualan (Rp)',
+                        data: dataOmset,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#dc3545',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

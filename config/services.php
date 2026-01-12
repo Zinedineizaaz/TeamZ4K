@@ -37,5 +37,9 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URL'),       // Panggil nama kuncinya
 ],
 
+'xendit' => [
+    'secretKey' => env('XENDIT_SECRET_KEY'),
+],
+
 ];
 

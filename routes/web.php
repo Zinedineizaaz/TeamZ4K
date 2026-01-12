@@ -11,7 +11,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\GameController; // <--- PENTING: Controller Game Baru
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\OrderController; // <--- TAMBAHAN: Import OrderController
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,7 @@ Route::get('/about', fn () => view('pages.about'));
 Route::get('/our-team', fn () => view('pages.team'));
 Route::get('/contact-us', fn () => view('pages.contact'));
 
-// Halaman Program (Updated dengan Logika Game di Controller)
+// Halaman Program
 Route::get('/program', [PageController::class, 'program'])->name('program');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 
@@ -62,13 +63,21 @@ Route::middleware(['auth'])->group(function () {
     // B. Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/history', [ProfileController::class, 'history'])->name('profile.history');
 
-    // C. GAME TEBAK KLAKAT (NEW FITUR)
-    // Route POST ini wajib ada untuk form action="{{ route('game.play') }}"
+    // C. GAME TEBAK KLAKAT
     Route::post('/lucky-klakat/play', [GameController::class, 'play'])->name('game.play');
-    
-    // (Opsional) Jika punya halaman game terpisah
     Route::get('/lucky-klakat', [GameController::class, 'index'])->name('game.index');
+
+    // D. SISTEM PESANAN & PEMBAYARAN (BARU)
+    // Jalur untuk buat pesanan
+    Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+    
+    // Jalur untuk buka halaman bayar
+    Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
+    
+    // Jalur untuk proses verifikasi upload bukti
+    Route::post('/payment/{id}/verify', [OrderController::class, 'pay'])->name('pay');
 });
 
 
@@ -83,28 +92,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // B. CRUD Produk (Staff & Police)
     Route::resource('products', ProductController::class);
     
-Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game.history');
+    Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game.history');
 
     // C. Kelola User / Pelanggan (Staff & Police)
     Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
     Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
     // D. MENU KHUSUS POLICE / SUPERADMIN
-    // Middleware 'police' membatasi akses khusus superadmin
     Route::middleware(['police'])->group(function () {
-        
-        // 1. Lihat Sampah (Soft Delete)
         Route::get('/users/trash', [AdminController::class, 'trashUsers'])->name('users.trash');
-        
-        // 2. Aksi Restore
         Route::get('/users/restore/{id}', [AdminController::class, 'restoreUser'])->name('users.restore');
-        
-        // 3. Lihat daftar Admin lain
         Route::get('/manage-admins', [AdminController::class, 'listAdmins'])->name('manage.admins');
-        
-        // 4. HAPUS USER PERMANEN / SOFT DELETE
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
-        
     });
 
 });

@@ -20,7 +20,7 @@ class LoginController extends Controller
     // --- LOGIKA 1: REDIRECT SESUAI ROLE ---
     public function redirectTo()
     {
-        $role = Auth::user()->role; 
+        $role = Auth::user()->role;
         
         // Kalau Admin/Police yang login
         if ($role == 'superadmin' || $role == 'admin') {

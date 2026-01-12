@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // Izinkan Xendit untuk mengirim laporan pembayaran otomatis (Webhook)
+        '/api/xendit/callback',
+        '/api/xendit/webhook',
     ];
 }

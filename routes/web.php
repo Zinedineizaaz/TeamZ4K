@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;     // PENTING: Jangan lupa ini
 use App\Http\Controllers\User\ProfileController; // PENTING: Jangan lupa ini
 use App\Http\Controllers\Auth\LoginController;   // PENTING: Jangan lupa ini
+use App\Http\Controllers\XenditController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +75,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     });
 });
 
+// Rute yang membutuhkan login (Auth)
+Route::middleware(['auth'])->group(function () {
+    
+    // 1. Rute menampilkan Form Pemesanan
+    Route::get('/order/form/{id}', [XenditController::class, 'showOrderForm'])->name('order.form');
+
+    // 2. Rute memproses Checkout (Ini yang menyebabkan error 404 jika tidak ada)
+    Route::post('/xendit/pay', [XenditController::class, 'checkout'])->name('xendit.pay');
+
+    // 3. Rute Halaman Sukses
+    Route::get('/order/status', function () {
+        return view('pages.payment_success');
+    })->name('payment.success');
+});
 
 // =====================
 // 6. FALLBACK (Halaman 404)

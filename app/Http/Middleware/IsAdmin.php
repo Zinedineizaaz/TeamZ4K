@@ -15,12 +15,12 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Cek apakah user sudah login dan apakah role-nya 'admin'
-        if (auth()->check() && auth()->user()->role === 'admin') {
+        // Pastikan user login dan memiliki role admin atau police
+        if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'police')) {
             return $next($request);
         }
 
-        // Jika bukan admin, berikan status 403 (Sesuai keinginan test)
-        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        // Jika bukan admin, gagalkan dengan status 403 (Sesuai kebutuhan test)
+        abort(403, 'Unauthorized access.');
     }
 }

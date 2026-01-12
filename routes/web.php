@@ -87,6 +87,8 @@ Route::middleware(['auth'])->group(function () {
 // PERBAIKAN: Menambahkan 'is_admin' ke dalam middleware group
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
 
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+
     // A. Dashboard Utama
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 

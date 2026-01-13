@@ -3,27 +3,16 @@
 namespace App\Http\Middleware;
 
 use Closure;
-<<<<<<< HEAD
-=======
 use Illuminate\Http\Request;
->>>>>>> 984efa60b5a6bd1f4beb10174f217cb29beea260
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class IsAdmin
 {
-<<<<<<< HEAD
-    public function handle($request, Closure $next)
-    {
-        if (!Auth::guard('admin')->check()) {
-            return redirect()->route('admin.login')
-                ->with('error', 'Login admin dulu!');
-        }
-
-        return $next($request);
-=======
     /**
      * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -32,19 +21,19 @@ class IsAdmin
             
             $user = Auth::user();
 
-            // 2. CEK ROLE (INI WAJIB ADA!)
+            // 2. CEK ROLE
             // Hanya Admin, Police, dan Superadmin yang boleh lewat.
-            if ($user->role == 'admin' || $user->role == 'police' || $user->role == 'superadmin') {
+            if ($user->role === 'admin' || $user->role === 'police' || $user->role === 'superadmin') {
                 return $next($request);
             }
 
-            // 3. KALAU USER BIASA (Agus dkk) -> TENDANG KELUAR
-            // Redirect ke halaman Profile User
-            return redirect()->route('profile')->with('error', 'Akses Ditolak! Halaman ini hanya untuk Admin.');
+            // 3. PERBAIKAN UTAMA DISINI (FIX ERROR GITHUB ACTIONS):
+            // Kalau User Biasa coba masuk -> JANGAN Redirect, tapi kasih ERROR 403.
+            // Test di GitHub menuntut respons 403 (Forbidden), bukan 200 (Halaman Profile).
+            abort(403, 'Akses Ditolak! Anda tidak memiliki izin untuk mengakses halaman Admin.');
         }
 
         // 4. Kalau belum login sama sekali -> Lempar ke Login Admin
         return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
->>>>>>> 984efa60b5a6bd1f4beb10174f217cb29beea260
     }
 }

@@ -8,17 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IsPolice
 {
-<<<<<<< HEAD
-    public function handle($request, Closure $next)
-    {
-        $admin = Auth::guard('admin')->user();
-
-        if (!$admin || !in_array($admin->role, ['police', 'superadmin'])) {
-            abort(403, 'AKSES KHUSUS POLICE / SUPERADMIN');
-        }
-
-        return $next($request);
-=======
     /**
      * Handle an incoming request.
      */
@@ -38,6 +27,5 @@ class IsPolice
         // 3. Kalau bukan Police -> Tampilkan Error 403 (Forbidden)
         // Atau bisa juga redirect back() dengan pesan error
         abort(403, 'DILARANG MASUK! Area ini khusus Police & Superadmin.');
->>>>>>> 984efa60b5a6bd1f4beb10174f217cb29beea260
     }
 }

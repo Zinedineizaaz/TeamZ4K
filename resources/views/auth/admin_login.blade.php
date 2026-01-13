@@ -3,7 +3,7 @@
 @section('content')
 
 {{-- 1. SCRIPT WAJIB RECAPTCHA (Taro disini aja aman) --}}
-{{-- {!! NoCaptcha::renderJs() !!} --}}
+{!! NoCaptcha::renderJs() !!}
 
 <div class="container">
     <div class="row justify-content-center">
@@ -47,7 +47,7 @@
                         {{-- 2. KOTAK CENTANG ROBOT (Ditaruh diatas tombol login) --}}
                         <div class="mb-3">
                             <div class="d-flex justify-content-center">
-                                {{-- {!! NoCaptcha::display() !!} --}}
+                                {!! NoCaptcha::display() !!}
                             </div>
                             
                             {{-- Pesan Error kalau lupa nyentang --}}

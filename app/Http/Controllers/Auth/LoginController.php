@@ -17,6 +17,20 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
+    /**
+     * TAMBAHAN 1: OVERRIDE VALIDASI USER BIASA
+     * Ini nambahin Recaptcha buat form login user biasa.
+     */
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+            // Pastikan rule 'recaptcha' sesuai dengan library yang lu pake (misal: 'recaptcha', 'captcha', atau 'google_recaptcha')
+            'g-recaptcha-response' => 'required|recaptcha', 
+        ]);
+    }
+
     // --- LOGIKA 1: REDIRECT SESUAI ROLE ---
     public function redirectTo()
     {
@@ -49,10 +63,12 @@ class LoginController extends Controller
 
     public function loginAdmin(Request $request)
     {
-        // 1. Validasi Input Standar
+        // 1. Validasi Input Standar + RECAPTCHA
         $this->validate($request, [
-            'email'   => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|min:6',
+            // TAMBAHAN 2: Validasi Recaptcha Admin
+            'g-recaptcha-response' => 'required|recaptcha',
         ]);
 
         // 2. Coba Login

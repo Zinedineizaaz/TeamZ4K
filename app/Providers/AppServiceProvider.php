@@ -22,5 +22,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Karena kamu pakai Bootstrap, baris ini penting biar pagination rapi
         Paginator::useBootstrapFive();
+        if (config('app.env') !== 'local') {
+        \URL::forceScheme('https');
+    }
     }
 }

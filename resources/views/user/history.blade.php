@@ -5,6 +5,7 @@
 @section('content')
 <div class="container py-5">
     <div class="row">
+        {{-- SIDEBAR PROFIL --}}
         <div class="col-md-3 mb-4">
             <div class="card border-0 shadow-sm rounded-4 text-center p-4">
                 <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=ffc107&color=000' }}" 
@@ -16,6 +17,7 @@
             </div>
         </div>
 
+        {{-- KONTEN RIWAYAT PESANAN --}}
         <div class="col-md-9">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-header bg-white py-3 border-bottom-0">
@@ -55,9 +57,25 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('payment', $order->id) }}" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm">
-                                            <i class="bi bi-eye me-1"></i> Detail
-                                        </a>
+                                        <div class="d-flex justify-content-center gap-1">
+                                            {{-- 1. TOMBOL DETAIL (BAWAAN) --}}
+                                            <a href="{{ route('payment', $order->id) }}" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm" title="Lihat Detail / Bayar">
+                                                <i class="bi bi-eye"></i> Detail
+                                            </a>
+
+                                            {{-- 2. TOMBOL MAGIC (SIMULASI BAYAR) --}}
+                                            {{-- Cuma muncul kalau status masih PENDING --}}
+                                            @if($status == 'PENDING')
+                                            <form action="{{ route('payment.simulate', $order->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm" 
+                                                        onclick="return confirm('Yakin mau ACC pesanan ini secara manual (Mode Test)?')"
+                                                        title="Simulasi Bayar Sukses">
+                                                    <i class="bi bi-check-circle"></i> ACC (Test)
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty

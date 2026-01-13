@@ -25,21 +25,40 @@
 
                     <hr class="my-4">
 
-                    @if($order->status == 'pending')
+                    @if(strtoupper($order->status) == 'PENDING')
                         <div class="text-center py-3">
                             <div class="bg-light p-4 rounded-3 mb-4">
                                 <h6 class="fw-bold mb-2">Metode Pembayaran Otomatis</h6>
                                 <p class="text-muted small">Klik tombol di bawah untuk membayar menggunakan E-Wallet (QRIS, ShopeePay), Virtual Account (Mandiri, BRI, BNI), atau Gerai Retail (Alfamart).</p>
                             </div>
                             
-                            {{-- TOMBOL XENDIT: Langsung membuka Link yang disimpan di snap_token --}}
-                            <a href="{{ $order->snap_token }}" target="_blank" class="btn btn-danger btn-lg w-100 py-3 fw-bold rounded-pill shadow">
+                            {{-- TOMBOL XENDIT --}}
+                            <a href="{{ $order->checkout_link }}" target="_blank" class="btn btn-danger btn-lg w-100 py-3 fw-bold rounded-pill shadow">
                                 <i class="bi bi-wallet2 me-2"></i>Bayar Sekarang
                             </a>
                             
-                            <p class="mt-3 small text-muted"><i class="bi bi-shield-lock-fill me-1"></i> Pembayaran Aman didukung oleh <strong>Xendit</strong></p>
+                            <p class="mt-3 small text-muted mb-4"><i class="bi bi-shield-lock-fill me-1"></i> Pembayaran Aman didukung oleh <strong>Xendit</strong></p>
+
+                            {{-- --- AREA TOMBOL NAVIGASI (BACK & SELESAIKAN) --- --}}
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                {{-- Tombol Kembali --}}
+                                <a href="{{ route('profile.history') }}" class="btn btn-link text-decoration-none text-muted fw-bold p-0">
+                                    <i class="bi bi-arrow-left me-1"></i> Kembali ke Riwayat
+                                </a>
+
+                                {{-- Tombol Selesaikan Pembayaran (Simulasi Test) --}}
+                                <form action="{{ route('payment.simulate', $order->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" 
+                                            onclick="return confirm('Gunakan fitur ini hanya untuk testing. Selesaikan pembayaran secara manual?')">
+                                        Selesaikan Pembayaran <i class="bi bi-check-circle-fill ms-1"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            {{-- --- END AREA TOMBOL --- --}}
+
                         </div>
-                    @elseif($order->status == 'success' || $order->status == 'settlement' || $order->status == 'PAID')
+                    @elseif(in_array(strtoupper($order->status), ['SUCCESS', 'SETTLEMENT', 'PAID']))
                         <div class="text-center py-4">
                             <div class="mb-3">
                                 <i class="bi bi-patch-check-fill text-success" style="font-size: 4rem;"></i>
@@ -75,7 +94,7 @@
         body * { visibility: hidden; }
         .card, .card * { visibility: visible; }
         .card { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
-        .btn, .bg-light, hr, p.mt-3 { display: none !important; }
+        .btn, .bg-light, hr, p.mt-3, .border-top { display: none !important; }
         .card-header { background-color: #dc3545 !important; color: white !important; -webkit-print-color-adjust: exact; }
     }
 </style>

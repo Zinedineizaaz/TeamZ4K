@@ -89,7 +89,35 @@ class OrderController extends Controller
             return back()->with('error', 'Gagal terhubung ke Xendit: ' . $e->getMessage());
         }
     }
+// --- TAMBAHAN UNTUK TESTING MANUAL (SIMULASI) ---
+    public function simulatePaymentSuccess($id)
+    {
+        // 1. Cari satu order buat dapet External ID-nya
+        $order = Order::findOrFail($id);
+        $external_id = $order->order_id_midtrans;
 
+        // 2. Gunakan logic transaksi biar aman
+        DB::transaction(function () use ($external_id) {
+            // Ambil semua item dalam satu nota invoice ini
+            $orders = Order::where('order_id_midtrans', $external_id)
+                           ->where('status', 'PENDING') // Cuma yang belum bayar
+                           ->get();
+
+            foreach ($orders as $o) {
+                // Update Status
+                $o->update(['status' => 'PAID']);
+
+                // Kurangi Stok Produk (Sama kayak logic webhook)
+                $product = Product::find($o->product_id);
+                if ($product) {
+                    $product->decrement('stock', $o->quantity);
+                }
+            }
+        });
+
+        // 3. Balikin ke halaman history dengan pesan sukses
+        return redirect()->route('profile.history')->with('success', 'Simulasi Pembayaran Berhasil! (Mode Test)');
+    }
     public function handleWebhook(Request $request)
     {
         if ($request->header('x-callback-token') !== config('services.xendit.callback_token')) {

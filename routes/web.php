@@ -135,6 +135,7 @@ Route::get('/orders/export', [AdminController::class, 'exportOrders'])->name('or
 
 // Rute yang membutuhkan login (Auth)
 Route::middleware(['auth'])->group(function () {
+Route::post('/payment/{id}/simulate', [OrderController::class, 'simulatePaymentSuccess'])->name('payment.simulate');
     
     // 1. Rute menampilkan Form Pemesanan
     Route::get('/order/form/{id}', [XenditWebhookController::class, 'showOrderForm'])->name('order.form');
@@ -147,7 +148,6 @@ Route::middleware(['auth'])->group(function () {
         return view('pages.payment_success');
     })->name('payment.success');
 });
-
 // =====================
 // 6. FALLBACK (Halaman 404)
 // =====================

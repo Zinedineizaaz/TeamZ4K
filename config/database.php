@@ -59,9 +59,9 @@ return [
             'strict' => true,
             'engine' => null,
             // --- PERBAIKAN DI SINI ---
-            'options' => extension_loaded('pdo_mysql') ? [
-                1014 => 1,
-            ] : [],
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
         'pgsql' => [
             'driver' => 'pgsql',

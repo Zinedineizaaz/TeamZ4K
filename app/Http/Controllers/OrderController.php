@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Str; 
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 use Xendit\Invoice\CreateInvoiceRequest;
@@ -16,8 +16,7 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        // Mengambil key dari config/services.php
-        $apiKey = config('services.xendit.secret_key');
+        $apiKey = config('services.xendit.api_key') ?? env('XENDIT_SECRET_KEY');
         Configuration::setXenditKey($apiKey);
     }
 
@@ -29,7 +28,7 @@ class OrderController extends Controller
         $request->validate([
             'address' => 'required|string|min:10',
         ]);
-
+        
         // 2. Ambil item keranjang beserta data produknya
         $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
 
@@ -61,36 +60,51 @@ class OrderController extends Controller
         // 4. Siapkan data untuk Xendit
         $createInvoice = new CreateInvoiceRequest([
             'external_id' => $externalId,
-            'amount' => (double) $totalPrice,
+            'amount'      => (double)$totalPrice,
             'payer_email' => $user->email,
-            'description' => 'Pembayaran Dimsaykuu - ' . $user->name,
-            'currency' => 'IDR',
+            'description' => 'Pembayaran Keranjang Belanja Dimsaykuu - ' . $user->name,
+            'customer' => [
+                'given_names' => $user->name,
+                'email' => $user->email,
+                'addresses' => [
+                    [
+                        'country' => 'Indonesia',
+                        'street_line1' => $request->address,
+                    ]
+                ]
+            ],
             'invoice_duration' => 86400,
-            // AKTIFKAN SEMUA METODE PEMBAYARAN
+            'currency' => 'IDR',
+            // Memastikan daftar metode muncul
             'payment_methods' => ['VIRTUAL_ACCOUNT', 'RETAIL_OUTLET', 'EWALLET', 'QRIS', 'DIRECT_DEBIT'],
             'success_redirect_url' => route('profile.history'),
             'failure_redirect_url' => route('cart.index'),
         ]);
 
         try {
-            $apiInstance = new InvoiceApi();
             $response = $apiInstance->createInvoice($createInvoice);
 
-            // Simpan ke database TiDB Cloud (Pastikan SSL aktif di database.php)
-            Order::create([
+            // 5. SIMPAN KE TABEL ORDERS
+            $order = Order::create([
                 'user_id' => $user->id,
                 'order_id_midtrans' => $externalId,
-                'product_name' => $allProductsString,
+                'product_name' => $allProductsString, 
                 'price' => $totalPrice,
                 'status' => 'PENDING',
-                'checkout_link' => $response['invoice_url']
+                'checkout_link' => $response['invoice_url'] // URL ini yang berisi metode pembayaran
             ]);
 
+            // 6. Kosongkan keranjang
             Cart::where('user_id', $user->id)->delete();
+
+            // OPSI A: Langsung arahkan ke Xendit (Rekomendasi agar metode langsung muncul)
             return redirect($response['invoice_url']);
 
+            // OPSI B: Jika tetap ingin ke halaman detail dulu, gunakan baris di bawah dan hapus Opsi A
+            // return redirect()->route('payment', $order->id);
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Koneksi API Gagal: ' . $e->getMessage());
+            return back()->with('error', 'Gagal terhubung ke Xendit: ' . $e->getMessage());
         }
     }
 

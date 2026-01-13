@@ -10,13 +10,13 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\XenditWebhookController; // Punya Kamu (HEAD)
-use App\Http\Controllers\CartController;          // Punya Agus/Staging
-use App\Http\Controllers\FavoriteController;      // Punya Agus/Staging
-use App\Http\Controllers\EventController;         // Punya Agus/Staging
+use App\Http\Controllers\XenditWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +48,6 @@ Route::get('/event-kuliner', [EventController::class, 'index'])->name('events.in
 
 // Rute Xendit Callback (Sebaiknya di luar auth middleware agar bisa diakses server Xendit)
 Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
-
 
 // =====================
 // 2. KHUSUS LOGIN ADMIN
@@ -132,6 +131,21 @@ Route::get('/orders/export', [AdminController::class, 'exportOrders'])->name('or
         
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
     });
+});
+
+// Rute yang membutuhkan login (Auth)
+Route::middleware(['auth'])->group(function () {
+    
+    // 1. Rute menampilkan Form Pemesanan
+    Route::get('/order/form/{id}', [XenditWebhookController::class, 'showOrderForm'])->name('order.form');
+
+    // 2. Rute memproses Checkout (Ini yang menyebabkan error 404 jika tidak ada)
+    Route::post('/xendit/pay', [XenditWebhookController::class, 'checkout'])->name('xendit.pay');
+
+    // 3. Rute Halaman Sukses
+    Route::get('/order/status', function () {
+        return view('pages.payment_success');
+    })->name('payment.success');
 });
 
 // =====================

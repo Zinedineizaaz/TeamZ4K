@@ -20,7 +20,7 @@ use App\Http\Controllers\EventController;
 
 /*
 |--------------------------------------------------------------------------
-| WEB ROUTES (FULL VERSION)
+| WEB ROUTES (FULL VERSION - MERGED)
 |--------------------------------------------------------------------------
 */
 
@@ -43,8 +43,11 @@ Route::get('/contact-us', fn() => view('pages.contact'));
 Route::get('/program', [PageController::class, 'program'])->name('program');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 
-// HALAMAN EVENT KULINER (M-BLOC / BLOK M) - BARU
+// HALAMAN EVENT KULINER (M-BLOC / BLOK M)
 Route::get('/event-kuliner', [EventController::class, 'index'])->name('events.index');
+
+// Rute Xendit Callback (Publik agar bisa diakses server Xendit)
+Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
 
 
 // =====================
@@ -79,13 +82,10 @@ Route::middleware(['auth'])->group(function () {
     // D. SISTEM PESANAN & PEMBAYARAN (XENDIT INTEGRATED)
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
 
-    // Rute Callback Xendit (Pastikan XenditWebhookController sudah dibuat)
-    Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
-
     // Jalur untuk buka halaman bayar
     Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
 
-    // Jalur untuk proses verifikasi
+    // Jalur untuk proses verifikasi (Callback / Manual)
     Route::post('/payment/{id}/verify', [OrderController::class, 'pay'])->name('pay');
 
     // E. KERANJANG BELANJA (CART)
@@ -109,8 +109,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
 
     // A. Dashboard Utama
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/orders/export', [AdminController::class, 'exportOrders'])->name('orders.export');
 
-    // B. CRUD Produk (Staff & Police)
+    // B. CRUD Produk
     Route::resource('products', ProductController::class);
 
     Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game.history');

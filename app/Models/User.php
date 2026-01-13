@@ -22,8 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',          // Wajib buat fitur Police/Admin
-        'last_login_at', 
-        'avatar',        
+        'last_login_at', // Monitoring login
+        'avatar',        // Untuk foto profil
     ];
 
     /**
@@ -78,6 +78,7 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token)
     {
+        // Menggunakan custom notification untuk reset password
         $this->notify(new CustomResetPasswordNotification($token));
     }
 
@@ -86,7 +87,7 @@ class User extends Authenticatable
         return $this->created_at->format('d F Y, H:i'); 
     }
 
-    // Accessor: Nama jadi huruf besar tiap awal kata
+    // Accessor: Nama jadi huruf besar tiap awal kata otomatis
     public function getNameAttribute($value)
     {
         return ucwords(strtolower($value));

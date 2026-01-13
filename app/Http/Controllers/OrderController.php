@@ -2,24 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Cart;
+use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Facades\DB;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 use Xendit\Invoice\CreateInvoiceRequest;
-use GuzzleHttp\Client;
 
 class OrderController extends Controller
 {
     public function __construct()
     {
-        $apiKey = config('services.xendit.api_key') ?? env('XENDIT_SECRET_KEY');
+        // Pastikan API Key diambil dari config agar aman di Vercel
+        $apiKey = config('services.xendit.secret_key');
         Configuration::setXenditKey($apiKey);
     }
 
+    /**
+     * Menampilkan riwayat pesanan user
+     */
+    public function history()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('user.history', compact('orders'));
+    }
+
+    /**
+     * Proses Checkout dan Pembuatan Invoice Xendit
+     */
     public function checkout(Request $request)
     {
         $user = Auth::user();
@@ -28,92 +44,72 @@ class OrderController extends Controller
         $request->validate([
             'address' => 'required|string|min:10',
         ]);
-        
-        // 2. Ambil item keranjang beserta data produknya
+
+        // 2. Ambil Item Keranjang
         $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja Anda kosong.');
         }
 
-        // 3. Hitung total harga dan buat daftar nama produk
         $totalPrice = 0;
-        $productNames = [];
+        $productDetails = [];
 
+        // 3. Validasi Stok & Hitung Total
         foreach ($cartItems as $item) {
+            if ($item->product->stock < $item->quantity) {
+                return back()->with('error', "Maaf, stok {$item->product->name} tidak mencukupi.");
+            }
             $totalPrice += $item->product->price * $item->quantity;
-            $productNames[] = $item->product->name . ' (' . $item->quantity . ')';
+            $productDetails[] = "{$item->product->name} ({$item->quantity})";
         }
 
-        $allProductsString = implode(', ', $productNames);
-
-        if ($totalPrice < 10000) {
-            return back()->with('error', 'Minimal total pembayaran adalah Rp 10.000');
-        }
-
+        // ID unik untuk referensi Xendit & Database
         $externalId = 'DIMSAY-' . time() . '-' . $user->id;
 
-        // Bypass SSL untuk Localhost
-        $customClient = new Client(['verify' => false]);
-        $apiInstance = new InvoiceApi($customClient);
-
-        // 4. Siapkan data untuk Xendit
+        // 4. Siapkan Request Invoice Xendit
+        $apiInstance = new InvoiceApi();
         $createInvoice = new CreateInvoiceRequest([
             'external_id' => $externalId,
-            'amount'      => (double)$totalPrice,
+            'amount' => (double) $totalPrice,
             'payer_email' => $user->email,
-            'description' => 'Pembayaran Keranjang Belanja Dimsaykuu - ' . $user->name,
-            'customer' => [
-                'given_names' => $user->name,
-                'email' => $user->email,
-                'addresses' => [
-                    [
-                        'country' => 'Indonesia',
-                        'street_line1' => $request->address,
-                    ]
-                ]
-            ],
-            'invoice_duration' => 86400,
+            'description' => 'Pembayaran Dimsaykuu: ' . implode(', ', $productDetails),
             'currency' => 'IDR',
-            // Memastikan daftar metode muncul
+            // Aktifkan semua metode pembayaran populer
             'payment_methods' => ['VIRTUAL_ACCOUNT', 'RETAIL_OUTLET', 'EWALLET', 'QRIS', 'DIRECT_DEBIT'],
             'success_redirect_url' => route('profile.history'),
             'failure_redirect_url' => route('cart.index'),
         ]);
 
         try {
+            // Panggil API Xendit
             $response = $apiInstance->createInvoice($createInvoice);
 
-            // 5. SIMPAN KE TABEL ORDERS
-            $order = Order::create([
-                'user_id' => $user->id,
-                'order_id_midtrans' => $externalId,
-                'product_name' => $allProductsString, 
-                'price' => $totalPrice,
-                'status' => 'PENDING',
-                'checkout_link' => $response['invoice_url'] // URL ini yang berisi metode pembayaran
-            ]);
+            // 5. Simpan ke Tabel Orders di TiDB Cloud
+            DB::transaction(function () use ($user, $cartItems, $externalId, $response, $totalPrice, $request) {
+                foreach ($cartItems as $item) {
+                    Order::create([
+                        'user_id' => $user->id,
+                        'product_id' => $item->product_id,
+                        'order_id_midtrans' => $externalId, // external_id Xendit
+                        'product_name' => $item->product->name,
+                        'quantity' => $item->quantity,
+                        'price' => $item->product->price * $item->quantity,
+                        'status' => 'PENDING',
+                        'checkout_link' => $response['invoice_url'],
+                        'address' => $request->address,
+                    ]);
+                }
 
-            // 6. Kosongkan keranjang
-            Cart::where('user_id', $user->id)->delete();
+                // 6. Kosongkan Keranjang setelah sukses buat invoice
+                Cart::where('user_id', $user->id)->delete();
+            });
 
-            // OPSI A: Langsung arahkan ke Xendit (Rekomendasi agar metode langsung muncul)
+            // Redirect ke halaman pembayaran Xendit
             return redirect($response['invoice_url']);
-
-            // OPSI B: Jika tetap ingin ke halaman detail dulu, gunakan baris di bawah dan hapus Opsi A
-            // return redirect()->route('payment', $order->id);
 
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal terhubung ke Xendit: ' . $e->getMessage());
         }
-    }
-
-    public function showPayment($id)
-    {
-        $order = Order::where('user_id', Auth::id())->findOrFail($id);
-        if ($order->status === 'PAID') {
-            return redirect()->route('profile.history')->with('success', 'Pesanan ini sudah lunas!');
-        }
-        return view('user.payment', compact('order'));
     }
 }

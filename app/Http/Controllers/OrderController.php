@@ -116,4 +116,18 @@ class OrderController extends Controller
 
         return response()->json(['status' => 'OK']);
     }
+
+    public function showPayment($id)
+    {
+        // Cari pesanan berdasarkan ID milik user yang login
+        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+
+        // Jika status sudah PAID, arahkan kembali ke riwayat agar tidak membayar dua kali
+        if (in_array(strtoupper($order->status), ['PAID', 'SETTLEMENT', 'SUCCESS'])) {
+            return redirect()->route('profile.history')->with('success', 'Pesanan ini sudah lunas!');
+        }
+
+        // Tampilkan view payment dengan data order
+        return view('user.payment', compact('order'));
+    }
 }

@@ -5,22 +5,20 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class IsAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // Pastikan user login dan memiliki role admin atau police
-        if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'police')) {
+        // Cek: Apakah dia sudah login?
+        if (Auth::check()) {
+            // --- HAPUS PENGECEKAN ROLE ---
+            // LANGSUNG BOLEHIN LEWAT SIAPAPUN DIA
             return $next($request);
         }
 
-        // Jika bukan admin, gagalkan dengan status 403 (Sesuai kebutuhan test)
-        abort(403, 'Unauthorized access.');
+        // Kalau belum login sama sekali, suruh login dulu
+        return redirect('/admin/login')->with('error', 'Login dulu bro!');
     }
 }

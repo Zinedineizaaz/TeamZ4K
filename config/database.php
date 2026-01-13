@@ -58,10 +58,10 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                // base_path() akan otomatis menyesuaikan folder certs di lokal maupun Vercel
-                PDO::MYSQL_ATTR_SSL_CA => base_path('certs/isrgrootx1.pem'),
-            ]) : [],
+          'options' => [
+                // Kita pake path Windows lengkap & pake double slash (\\) biar aman
+                PDO::MYSQL_ATTR_SSL_CA => 'C:\\Users\\Axioo\\Downloads\\TeamZ4K\\certs\\isrgrootx1.pem',
+            ],
         ],
         'pgsql' => [
             'driver' => 'pgsql',

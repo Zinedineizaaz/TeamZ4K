@@ -4,20 +4,23 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class IsPolice
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // Sesuaikan pengecekan dengan role 'police' sesuai data di TiDB Cloud
-        if (auth()->check() && auth()->user()->role === 'police') {
-            return $next($request);
+        if (Auth::check()) {
+            $role = Auth::user()->role;
+
+            // HANYA BOLEHIN POLICE & SUPERADMIN
+            // Staff (admin) tidak ada di sini, jadi bakal ditolak
+            if ($role === 'police' || $role === 'superadmin') {
+                return $next($request);
+            }
         }
 
-        abort(403, 'Akses Ditolak! Jabatan Anda tidak memiliki izin.');
+        // Tendang Staff atau User biasa
+        abort(403, 'DILARANG MASUK! Area ini khusus Police & Superadmin.');
     }
 }

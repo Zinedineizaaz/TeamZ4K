@@ -107,7 +107,7 @@
                     
                     @if($cartItems->count() > 0)
                         {{-- FORM CHECKOUT DENGAN ALAMAT --}}
-                        <form action="{{ route('order') }}" method="POST">
+                        <form action="{{ route('checkout') }}" method="POST">
                             @csrf
                             <div class="mb-4">
                                 <label for="address" class="form-label fw-bold">Alamat Pengiriman</label>

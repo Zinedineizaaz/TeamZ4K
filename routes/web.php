@@ -12,11 +12,14 @@ use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\OrderController; // <--- TAMBAHAN: Import OrderController
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\EventController; // <--- TAMBAHAN: Import EventController
 
 /*
 |--------------------------------------------------------------------------
-| WEB ROUTES (FULL VERSION - FIXED)
+| WEB ROUTES (FULL VERSION)
 |--------------------------------------------------------------------------
 */
 
@@ -35,9 +38,12 @@ Route::get('/about', fn () => view('pages.about'));
 Route::get('/our-team', fn () => view('pages.team'));
 Route::get('/contact-us', fn () => view('pages.contact'));
 
-// Halaman Program
+// Halaman Program & Menu
 Route::get('/program', [PageController::class, 'program'])->name('program');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
+
+// HALAMAN EVENT KULINER (M-BLOC / BLOK M) - BARU
+Route::get('/event-kuliner', [EventController::class, 'index'])->name('events.index');
 
 
 // =====================
@@ -69,20 +75,26 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/lucky-klakat/play', [GameController::class, 'play'])->name('game.play');
     Route::get('/lucky-klakat', [GameController::class, 'index'])->name('game.index');
 
-    // D. SISTEM PESANAN & PEMBAYARAN (BARU)
-    // Jalur untuk buat pesanan
+    // D. SISTEM PESANAN & PEMBAYARAN (XENDIT INTEGRATED)
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-    
-    // Jalur untuk buka halaman bayar
     Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
-    
-    // Jalur untuk proses verifikasi upload bukti
+    // Note: Verify biasanya ditangani via Callback API, tapi tetap disediakan jika butuh manual verify
     Route::post('/payment/{id}/verify', [OrderController::class, 'pay'])->name('pay');
+
+    // E. KERANJANG BELANJA (CART)
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{productId}', [CartController::class, 'store'])->name('cart.add');
+    Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.remove');
+
+    // F. MENU FAVORIT (WISHLIST)
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/toggle/{productId}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 });
 
 
 // =====================
-// 5. GROUP ADMIN & POLICE (Dashboard & Manajemen)
+// 5. GROUP ADMIN & POLICE
 // =====================
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     
@@ -94,7 +106,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     
     Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game.history');
 
-    // C. Kelola User / Pelanggan (Staff & Police)
+    // C. Kelola User / Pelanggan
     Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
     Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
@@ -105,7 +117,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/manage-admins', [AdminController::class, 'listAdmins'])->name('manage.admins');
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
     });
-
 });
 
 

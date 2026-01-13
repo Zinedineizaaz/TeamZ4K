@@ -66,6 +66,60 @@
                     </div>
                 </div>
 
+                {{-- Sisipkan bagian ini setelah penutup Row Statistik Finansial dan sebelum Grafik Analitik --}}
+
+<h4 class="fw-bold mb-3 text-dark mt-4"><i class="bi bi-cart-check me-2"></i>Riwayat Pembelian Terbaru</h4>
+<div class="card border-0 shadow-sm mb-5">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID Pesanan</th>
+                        <th>Pelanggan</th>
+                        <th>Produk</th>
+                        <th>Total Bayar</th>
+                        <th>Status</th>
+                        <th class="pe-4">Waktu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recent_orders as $order)
+                    <tr>
+                        <td class="ps-4 small text-muted">#{{ $order->order_id_midtrans }}</td>
+                        <td>
+                            <div class="fw-bold">{{ $order->user->name ?? 'User Terhapus' }}</div>
+                            <small class="text-muted">{{ $order->user->email ?? '-' }}</small>
+                        </td>
+                        <td>{{ Str::limit($order->product_name, 30) }}</td>
+                        <td class="fw-bold text-danger">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
+                        <td>
+                            @if(in_array($order->status, ['PAID', 'SETTLEMENT', 'SUCCESS']))
+                                <span class="badge bg-success rounded-pill px-3">LUNAS</span>
+                            @elseif($order->status == 'PENDING')
+                                <span class="badge bg-warning text-dark rounded-pill px-3">MENUNGGU</span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill px-3">{{ $order->status }}</span>
+                            @endif
+                        </td>
+                        <td class="pe-4 small">{{ $order->created_at->diffForHumans() }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">Belum ada transaksi terekam.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if($recent_orders->count() > 0)
+    <div class="card-footer bg-white text-center py-3 border-0">
+        <a href="#" class="text-danger fw-bold text-decoration-none small">LIHAT SEMUA PESANAN <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+    @endif
+</div>
+
                 {{-- GRAFIK ANALITIK (UPDATE BARU) --}}
                 <div class="card border-0 shadow-sm mb-5" style="background-color: #f8f9fa;">
                     <div class="card-body p-4">

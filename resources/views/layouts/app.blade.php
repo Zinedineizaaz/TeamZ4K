@@ -64,6 +64,12 @@
             background-color: rgba(255,255,255,0.2);
             border-color: #fff;
         }
+
+        /* Badge Keranjang */
+        .cart-badge {
+            font-size: 0.65rem;
+            padding: 0.25em 0.45em;
+        }
     </style>
 </head>
 
@@ -116,6 +122,32 @@
 
                         {{-- ========== AUTH USER ========== --}}
                         @auth
+                           {{-- Ikon Favorit --}}
+<li class="nav-item me-3">
+    <a class="nav-link text-white position-relative" href="{{ route('favorites.index') }}" title="Favorit Saya">
+        <i class="bi bi-heart-fill fs-5"></i>
+
+        @if(Auth::user()->favorites()->count() > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
+                {{ Auth::user()->favorites()->count() }}
+            </span>
+        @endif
+    </a>
+</li>
+
+
+                            {{-- Ikon Keranjang (Cart) --}}
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white position-relative" href="{{ route('cart.index') }}" title="Keranjang Belanja">
+                                    <i class="bi bi-cart3 fs-5"></i>
+                                    @if(Auth::user()->carts->count() > 0)
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark cart-badge">
+                                            {{ Auth::user()->carts->count() }}
+                                        </span>
+                                    @endif
+                                </a>
+                            </li>
+
                             <li class="nav-item dropdown ms-lg-2">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center profile-trigger mt-2 mt-lg-0"
                                    href="#"
@@ -158,7 +190,6 @@
                                         </a>
                                     </li>
 
-                                    {{-- MENU TAMBAHAN: RIWAYAT PESANAN --}}
                                     <li>
                                         <a class="dropdown-item" href="{{ route('profile.history') }}">
                                             <i class="bi bi-clock-history me-2 text-danger"></i>Riwayat Pesanan

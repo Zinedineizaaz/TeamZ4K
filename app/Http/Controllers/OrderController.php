@@ -16,7 +16,7 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        $apiKey = config('services.xendit.api_key') ?? env('XENDIT_API_KEY');
+        $apiKey = config('services.xendit.api_key') ?? env('XENDIT_SECRET_KEY');
         Configuration::setXenditKey($apiKey);
     }
 

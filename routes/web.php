@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     // Cart & Favorites
     Route::resource('cart', CartController::class);
     Route::post('/favorites/toggle/{productId}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 
 // 6. ADMIN & POLICE ACCESS

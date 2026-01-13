@@ -13,16 +13,11 @@ class IsPolice
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // 1. Cek apakah user sedang login DAN apakah rolenya superadmin
+        // Sesuaikan pengecekan dengan role 'police' sesuai data di TiDB Cloud
         if (auth()->check() && auth()->user()->role === 'police') {
-            
-            // Kalau IYA (Police), silakan lanjut masuk
             return $next($request);
         }
 
-        // --- UBAH BAGIAN INI ---
-        // Jangan redirect ke '/', tapi stop proses dan tampilkan Error 403.
-        // Laravel otomatis akan mencari file view di resources/views/errors/403.blade.php
-        abort(403, 'Akses Ditolak! Halaman ini hanya untuk Police.');
+        abort(403, 'Akses Ditolak! Jabatan Anda tidak memiliki izin.');
     }
 }

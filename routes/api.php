@@ -12,7 +12,7 @@ use App\Http\Controllers\XenditWebhookController;
 */
 
 // Route untuk Webhook Xendit (Tanpa Auth Sanctum karena diakses oleh server Xendit)
-Route::post('/xendit/webhook', [XenditWebhookController::class, 'handle']);
+Route::post('/xendit/callback', [XenditWebhookController::class, 'handle'])->name('xendit.webhook');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

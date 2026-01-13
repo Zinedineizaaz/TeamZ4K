@@ -58,11 +58,11 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            // --- PERBAIKAN DI SINI ---
+            'options' => extension_loaded('pdo_mysql') ? [
+                PDO::MYSQL_ATTR_SSL_CA => true,
+            ] : [],
         ],
-
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage; // Gunakan Storage untuk fleksibilitas
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
 {

@@ -6,7 +6,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "ext-pdo_mysql": "*",
         "anhskohbo/no-captcha": "^3.7",
+        "cloudinary-labs/cloudinary-laravel": "^2.3",
         "doctrine/dbal": "^3.10",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
@@ -15,8 +17,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.6",
         "midtrans/midtrans-php": "^2.6",
-        "xendit/xendit-php": "^7.0",
-        "ext-pdo_mysql": "*"
+        "xendit/xendit-php": "^7.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

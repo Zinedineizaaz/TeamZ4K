@@ -13,13 +13,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\OrderController;
-<<<<<<< HEAD
 use App\Http\Controllers\XenditWebhookController;
-=======
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\EventController; // <--- TAMBAHAN: Import EventController
->>>>>>> Agus
+use App\Http\Controllers\EventController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -81,19 +78,14 @@ Route::middleware(['auth'])->group(function () {
 
     // D. SISTEM PESANAN & PEMBAYARAN (XENDIT INTEGRATED)
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-<<<<<<< HEAD
 
-    // Rute ini harus bisa diakses publik oleh server Xendit
+    // Rute Callback Xendit (Pastikan XenditWebhookController sudah dibuat)
     Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
 
     // Jalur untuk buka halaman bayar
     Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
 
-    // Jalur untuk proses verifikasi upload bukti
-=======
-    Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
-    // Note: Verify biasanya ditangani via Callback API, tapi tetap disediakan jika butuh manual verify
->>>>>>> Agus
+    // Jalur untuk proses verifikasi
     Route::post('/payment/{id}/verify', [OrderController::class, 'pay'])->name('pay');
 
     // E. KERANJANG BELANJA (CART)
@@ -111,7 +103,6 @@ Route::middleware(['auth'])->group(function () {
 // =====================
 // 5. GROUP ADMIN & POLICE
 // =====================
-// PERBAIKAN: Menambahkan 'is_admin' ke dalam middleware group
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
 
     Route::get('/users', [AdminController::class, 'users'])->name('users');
@@ -124,26 +115,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
 
     Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game.history');
 
-<<<<<<< HEAD
-    // C. Kelola User / Pelanggan (Staff & Police)
-    // Rute ini sekarang otomatis terlindungi oleh 'is_admin' di atas
-=======
     // C. Kelola User / Pelanggan
->>>>>>> Agus
     Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
     Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
-    
     // D. MENU KHUSUS POLICE / SUPERADMIN
-    // Staff (Admin) gak bakal bisa akses yang ada di dalam group ini
     Route::middleware(['police'])->group(function () {
-        
         Route::get('/users/trash', [AdminController::class, 'trashUsers'])->name('users.trash');
         Route::get('/users/restore/{id}', [AdminController::class, 'restoreUser'])->name('users.restore');
-        
-        // INI DIA YANG MAU KITA LINDUNGI
         Route::get('/manage-admins', [AdminController::class, 'listAdmins'])->name('manage.admins');
-        
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
     });
 });

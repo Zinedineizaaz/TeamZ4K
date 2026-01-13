@@ -13,5 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'api/xendit/webhook', // Mengizinkan akses luar tanpa token CSRF untuk Webhook Xendit
+        'api/xendit/callback', // Izinkan Xendit mengirim data ke sini
     ];
 }

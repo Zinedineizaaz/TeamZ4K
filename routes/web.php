@@ -12,7 +12,8 @@ use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\OrderController; // <--- TAMBAHAN: Import OrderController
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\XenditWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
     // D. SISTEM PESANAN & PEMBAYARAN (BARU)
     // Jalur untuk buat pesanan
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+
+    // Rute ini harus bisa diakses publik oleh server Xendit
+    Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
 
     // Jalur untuk buka halaman bayar
     Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');

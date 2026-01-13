@@ -14,7 +14,7 @@ class IsPolice
     public function handle(Request $request, Closure $next): Response
     {
         // 1. Cek apakah user sedang login DAN apakah rolenya superadmin
-        if (auth()->check() && auth()->user()->role === 'superadmin') {
+        if (auth()->check() && auth()->user()->role === 'police') {
             
             // Kalau IYA (Police), silakan lanjut masuk
             return $next($request);

@@ -71,7 +71,7 @@
 <<h4 class="fw-bold mb-3 text-dark mt-4"><i class="bi bi-cart-check me-2"></i>Riwayat Pembelian Terbaru</h4>
 
 <a href="{{ route('admin.orders.export') }}" class="btn btn-success mb-3 shadow-sm rounded-pill">
-    <i class="bi bi-file-earmark-excel me-2"></i>Export ke Excel
+    <i class="bi bi-file-earmark-excel me-2"></i>Export ke CSV
 </a>
 
 <div class="card border-0 shadow-sm mb-5 rounded-4 overflow-hidden">

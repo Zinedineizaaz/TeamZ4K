@@ -165,9 +165,13 @@ class AdminController extends Controller
      */
     public function exportOrders()
     {
+        // 1. Tentukan Nama File (Pake tanggal & jam biar unik)
         $fileName = 'laporan-transaksi-' . date('Y-m-d_H-i') . '.csv';
+
+        // 2. Ambil Data dari Database
         $orders = Order::with('user')->orderBy('created_at', 'desc')->get();
 
+        // 3. Header Browser (Biar otomatis download)
         $headers = array(
             "Content-type"        => "text/csv",
             "Content-Disposition" => "attachment; filename=$fileName",
@@ -176,26 +180,46 @@ class AdminController extends Controller
             "Expires"             => "0"
         );
 
-        $columns = array('ID Order', 'Nama Customer', 'Menu', 'Harga (Rp)', 'Status', 'Tanggal Transaksi');
+        // 4. JUDUL KOLOM EXCEL (Saya tambahin 'Alamat Pengiriman')
+        $columns = array('ID Order', 'Nama Customer', 'Alamat Pengiriman', 'Menu', 'Harga (Rp)', 'Status', 'Tanggal Transaksi');
 
+        // 5. Proses Penulisan Data
         $callback = function() use($orders, $columns) {
             $file = fopen('php://output', 'w');
+            
+            // Tulis Judul Kolom dulu paling atas
             fputcsv($file, $columns);
 
+            // Looping isi data
             foreach ($orders as $order) {
-                $row['ID Order']  = $order->id; // Atau order_id_midtrans
-                $row['Customer']  = $order->user ? $order->user->name : 'Guest';
-                $row['Menu']      = $order->product_name;
-                $row['Harga']     = $order->price; // Pastikan ini 'price' bukan 'total_price' (sesuai db lu terakhir)
-                $row['Status']    = $order->status;
-                $row['Tanggal']   = $order->created_at->format('Y-m-d H:i:s');
+                fputcsv($file, array(
+                    // Kolom 1: ID Order (Pake external ID biar keren, atau $order->id juga boleh)
+                    $order->order_id_midtrans, 
 
-                fputcsv($file, array($row['ID Order'], $row['Customer'], $row['Menu'], $row['Harga'], $row['Status'], $row['Tanggal']));
+                    // Kolom 2: Nama Customer (Jaga-jaga kalo user udah diapus)
+                    $order->user ? $order->user->name : 'Guest', 
+
+                    // Kolom 3: ALAMAT (PENTING! Pake tanda ?? '-' biar gak error kalau kosong)
+                    $order->address ?? '-', 
+
+                    // Kolom 4: Menu
+                    $order->product_name, 
+
+                    // Kolom 5: Harga
+                    $order->price, 
+
+                    // Kolom 6: Status
+                    $order->status, 
+
+                    // Kolom 7: Tanggal
+                    $order->created_at->format('Y-m-d H:i:s')
+                ));
             }
 
             fclose($file);
         };
 
+        // 6. Return Download
         return response()->stream($callback, 200, $headers);
     }
     

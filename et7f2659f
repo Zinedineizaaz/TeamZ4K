@@ -1,0 +1,133 @@
+[33m69658ca[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mstaging[m[33m, [m[1;31morigin/staging[m[33m)[m update login
+[33m7f2659f[m testing 1
+[33md873557[m testing
+[33me292e5e[m  Perbaiki Error Streak
+[33m5fd0097[m Merge branch 'KhairanSawit' into staging
+[33mbb75499[m testing
+[33m5534f33[m Test
+[33md50d150[m Fix: Menyatukan role admin-police dan sinkronisasi database staging
+[33mf941173[m Fix: Menyatukan role admin-police dan sinkronisasi database staging
+[33m63a04dc[m Perbaiki Format Excel
+[33m984efa6[m Memperbaiki Logika Admin dan User pada dropdown profile
+[33mf2b3c73[m feat: separate admin and user login using multi-guard
+[33m67b52fb[m Update: Fix Menu UI, Order Controller, Middleware & Invoice
+[33mc03b2e2[m Fix middleware dan route di staging
+[33m1288783[m menambah fitur verifikasi manual pembayaran
+[33me962e05[m testing
+[33m1f59052[m update cart
+[33m2ef5102[m Merge branch 'KhairanSawit' into staging
+[33m0b3e5fb[m Fix Payment
+[33m5aff22f[m Fix merge conflict database config
+[33m06a3238[m update payment 2
+[33med2e50f[m update order
+[33md4a42e2[m testing payment
+[33mc527cbb[m tes
+[33mcbe25f0[m tes
+[33medb4e75[m Xendit Controller
+[33m1dce33b[m update payment
+[33md8d23e9[m tes
+[33mdd67b34[m testing
+[33m81c5e1c[m update paynent xendit
+[33mecc2576[m update config
+[33mb54443c[m Fix merge conflict in User model
+[33mc1ec921[m Fix dashboard error and add export CSV feature
+[33m3d1442c[m Fix merge conflict in User model
+[33m8172cc7[m Menonaktifkan SSL database untuk development lokal
+[33m3006f6d[m Fix conflict merge Agus and staging in routes/web.php
+[33m0de4d2e[m Selesaikan konflik merge Agus ke staging
+[33me34a0e7[m Selesaikan fitur Xendit, Event M-Bloc, dan Dashboard Admin
+[33m107a491[m Merge fix conflict database SSL path
+[33m92a1395[m Fix conflict database config
+[33mddd306a[m Fix database connection TiDB & Login Logic
+[33mf8fd794[m update storage
+[33ma466149[m update table for soft delete
+[33m9e2df32[m update team)
+[33m9d8e56b[m update home
+[33mc1d9c0a[m update certs
+[33m7a8e14b[m Update config
+[33mb9be953[m update
+[33m360682b[m Update full
+[33m446be92[m Feature: Auto stock decrement on Xendit PAID status
+[33m6cfeb37[m Update TiDB Configuration
+[33mfb66961[m Add vite build script for Vercel deployment
+[33m3e4d90c[m Fix: CI/CD access denied 403, Install doctrine/dbal, and Add Xendit stock decrement
+[33ma1a0e04[m Fix: CI/CD database migration and admin access, Add: Xendit payment with auto stock decrement
+[33mb2cbdb1[m Fix: Install doctrine/dbal for database migrations in CI/CD
+[33maf4b31d[m feat: update profil (upload avatar), dashboard admin analitik (grafik), dan integrasi pembayaran Xendit, riwayat pesanan user
+[33m3a8a875[m Disable Recaptcha sementara biar team bisa login
+[33m7131023[m Menambahkan Fitur Cetak Laporan Data User
+[33m6cc1dc2[m Memperbaiki Layout Admin Mnejadi Satu Bagian, Menambahkan Fitur Mini Game Klakat, Lihat Riwayat Game
+[33m3517072[m Memperbaiki Tampilan User Home & Menambahkan Navigasi Lihat Web Dibagian Admin
+[33m1e9dbfd[m Eloquent dan Request Handling pada bagian views user
+[33m9e5ac05[m Fiksasi Fitur Police & Admin Police Bisa Restore data user yang kehapus
+[33m32b027f[m Menambahkan Recaptcha padda Login Admin
+[33mff2cf89[m Add fitur Login with Google & Socialite
+[33m7888cc9[m Fix Admin Police Roles, Routes, and User Management Views
+[33m40b1a42[m Merge branch 'KhairanSawit' into staging
+[33m8eee13d[m Fix Fitur Reset Password SMTP & Revamp UI Auth User
+[33m835f4b5[m Merge branch 'KhairanSawit' into staging
+[33md369652[m Menambahkan Visual Untuk Bagian User
+[33mc32d490[m Menambahkan fitur login khusus admin dan perbaikan routes
+[33m5272702[m Merge branch 'Agus' of https://github.com/Zinedineizaaz/TeamZ4K into KhairanSawit
+[33me28209c[m Fix: Provide valid and writable cache paths for Vercel
+[33m2b7e2ae[m Fix: Remove invalid method and use env for cache paths
+[33m46bb07b[m Fix: Redirect bootstrap cache and storage to /tmp for Vercel
+[33m416c63a[m Fix: Add autoload and fix application initialization
+[33mcca25bc[m Fix API index.php
+[33m4872167[m Fix: Upgrade vercel-php runtime to support Node 20
+[33m1265a16[m Fix CI/CD: Update test assertion to match application response 403
+[33m46f05ff[m Fix: Use RefreshDatabase trait for UserAccessTest
+[33ma4f73c1[m Fix: Ensure migrations run before tests in CI/CD
+[33m7d0c2a8[m Fix CI/CD: complete pipeline with migrations and sqlite
+[33m090e5eb[m Fix CI/CD: resolve encryption key and database access issues
+[33m0a84547[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Siap untuk preview di Vercel
+[33m0400c6f[m (testing)
+[33mc5fe48b[m (tes)
+[33ma8d635b[m (tes)
+[33md21e47d[m Merge pull request #39 from Zinedineizaaz/staging
+[33mb653c95[m revisi database
+[33m1de396d[m Merge pull request #38 from Zinedineizaaz/staging
+[33m3280fec[m Fix: Final deployment configuration and build settings for Issue
+[33m6abccf7[m Fix: Update Vercel runtime version and structure for Issue
+[33m64dc879[m Complete Setup: CI/CD, Vercel, and SSL Database for Issue #36
+[33mb8a93ec[m Update fitur user: login dan register
+[33m60d82b9[m Fix: Implementasi Policy Security & Perbaikan Provider
+[33m416aab9[m Fix error User Model fillable
+[33md09c821[m Merge branch 'main' of https://github.com/Zinedineizaaz/TeamZ4K
+[33m77fd64f[m Fitur Final: Super Admin (Police), Security Fixes & Smart Redirect
+[33mb85e405[m Add last_login_at to fillable and fix register issue
+[33m52ae51f[m Add last_login_at to fillable and fix register issue
+[33m30e4773[m Fix security controller & add automated testing
+[33m395022e[m Fitur Police: Dashboard Super Admin & Role Management Selesai
+[33mb715cf7[m (admin to user)
+[33m5e2a00d[m (update admin ke user)
+[33mfa88da1[m update admin dashboard view
+[33m6547b75[m (login dan register admin)
+[33m77400fb[m (tambahan laravel UI)
+[33m43a84a8[m (tambahan laravel UI)
+[33m9133e4f[m Merge pull request #3 from Zinedineizaaz/feature/update-title
+[33m9638e58[m chore: Add initial CI workflow file
+[33m127dc42[m[33m ([m[1;31morigin/feature/update-title[m[33m, [m[1;32mfeature/update-title[m[33m)[m feat: implement title update and add CI workflow
+[33m0fd28cd[m Merge pull request #2 from Zinedineizaaz/feature/update-title
+[33m755aaa0[m Resolve merge conflict on index.php
+[33mf67b128[m UjicobaCI
+[33m1677545[m Uijicoba CI
+[33mad4fd16[m feat: new title for CI
+[33m3f0358d[m Update README.md
+[33mcf6f157[m Delete README.md~
+[33m5033367[m Update README.md
+[33m2a278a1[m Remove accidental submodule TeamZ4K
+[33m61d9eca[m Update README TEAMZ4K dan penyesuaian dokumen
+[33m93ed3bf[m Rapihin lagi Product Model, tambahin PHPDoc.
+[33ma883ee1[m Memperbaiki Error pada kode dibagian collection pagecontroller.
+[33me8230a8[m perbaikan ulang
+[33mc16bfe1[m update assessment 2
+[33m3c4a2cd[m update assessment 2
+[33m14f518f[m Update ENV
+[33me045f9b[m Penambahan file baru
+[33mb863f25[m Menambahkan file baru
+[33me1b89c4[m Initial project commit
+[33m8dfe081[m Initial project commit
+[33mb1aa2c7[m update project dimsaykuu
+[33mf1325a6[m Contributor pertama dari lokal
+[33m0c603aa[m first init github

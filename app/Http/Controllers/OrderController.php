@@ -16,7 +16,7 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        // Menggunakan API Key dari config/services.php agar aman di Vercel
+        // Menggunakan API Key dari config/services.php
         Configuration::setXenditKey(config('services.xendit.secret_key'));
     }
 
@@ -30,14 +30,16 @@ class OrderController extends Controller
 
         $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
 
+        // --- BAGIAN YANG TADI ERROR SUDAH DIPERBAIKI ---
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
         }
+        // ----------------------------------------------
 
         $totalPrice = 0;
         $productDetails = [];
 
-        // Validasi stok di TiDB Cloud sebelum lanjut
+        // Validasi stok
         foreach ($cartItems as $item) {
             if ($item->product->stock < $item->quantity) {
                 return back()->with('error', "Stok {$item->product->name} tidak mencukupi.");
@@ -48,7 +50,7 @@ class OrderController extends Controller
 
         $externalId = 'DIMSAY-' . time() . '-' . $user->id;
 
-        // Siapkan Invoice Xendit dengan berbagai metode pembayaran
+        // Siapkan Invoice Xendit
         $apiInstance = new InvoiceApi();
         $createInvoice = new CreateInvoiceRequest([
             'external_id' => $externalId,
@@ -56,8 +58,7 @@ class OrderController extends Controller
             'payer_email' => $user->email,
             'description' => 'Pembayaran Dimsaykuu: ' . implode(', ', $productDetails),
             'currency' => 'IDR',
-            // Menampilkan berbagai metode pembayaran
-            'payment_methods' => ['VIRTUAL_ACCOUNT', 'RETAIL_OUTLET', 'EWALLET', 'QRIS', 'DIRECT_DEBIT'],
+            // payment_methods DIHAPUS agar semua opsi muncul
             'success_redirect_url' => route('profile.history'),
             'failure_redirect_url' => route('cart.index'),
         ]);
@@ -65,11 +66,11 @@ class OrderController extends Controller
         try {
             $response = $apiInstance->createInvoice($createInvoice);
 
-            // Simpan ke tabel Orders di TiDB Cloud
+            // Simpan ke database
             foreach ($cartItems as $item) {
                 Order::create([
                     'user_id' => $user->id,
-                    'order_id_midtrans' => $externalId, // Digunakan sebagai external_id Xendit
+                    'order_id_midtrans' => $externalId,
                     'product_name' => $item->product->name,
                     'price' => $item->product->price * $item->quantity,
                     'quantity' => $item->quantity,
@@ -91,7 +92,6 @@ class OrderController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        // Verifikasi Token Callback untuk keamanan
         if ($request->header('x-callback-token') !== config('services.xendit.callback_token')) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -106,7 +106,6 @@ class OrderController extends Controller
                 foreach ($orders as $order) {
                     $order->update(['status' => 'PAID']);
 
-                    // KURANGI STOK HANYA SAAT LUNAS
                     $product = Product::find($order->product_id);
                     if ($product) {
                         $product->decrement('stock', $order->quantity);

@@ -38,7 +38,12 @@ return [
     ],
 
     'xendit' => [
-        'secret_key' => env('XENDIT_SECRET_KEY'),
+        // GANTI baris ini:
+        // 'secret_key' => env('XENDIT_SECRET_KEY'),
+        
+        // MENJADI ini (sesuai nama di .env kamu):
+        'secret_key' => env('XENDIT_API_KEY'), 
+        
         'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
     ],
 

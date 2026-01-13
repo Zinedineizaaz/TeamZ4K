@@ -16,58 +16,41 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        // Pastikan API Key diambil dari config agar aman di Vercel
-        $apiKey = config('services.xendit.secret_key');
-        Configuration::setXenditKey($apiKey);
+        // Menggunakan API Key dari config/services.php
+        Configuration::setXenditKey(config('services.xendit.secret_key'));
     }
 
-    /**
-     * Menampilkan riwayat pesanan user
-     */
-    public function history()
-    {
-        $orders = Order::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return view('user.history', compact('orders'));
-    }
-
-    /**
-     * Proses Checkout dan Pembuatan Invoice Xendit
-     */
     public function checkout(Request $request)
     {
         $user = Auth::user();
 
-        // 1. Validasi Input Alamat
         $request->validate([
             'address' => 'required|string|min:10',
         ]);
 
-        // 2. Ambil Item Keranjang
         $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
 
+        // --- BAGIAN YANG TADI ERROR SUDAH DIPERBAIKI ---
         if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang belanja Anda kosong.');
+            return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
         }
+        // ----------------------------------------------
 
         $totalPrice = 0;
         $productDetails = [];
 
-        // 3. Validasi Stok & Hitung Total
+        // Validasi stok
         foreach ($cartItems as $item) {
             if ($item->product->stock < $item->quantity) {
-                return back()->with('error', "Maaf, stok {$item->product->name} tidak mencukupi.");
+                return back()->with('error', "Stok {$item->product->name} tidak mencukupi.");
             }
             $totalPrice += $item->product->price * $item->quantity;
             $productDetails[] = "{$item->product->name} ({$item->quantity})";
         }
 
-        // ID unik untuk referensi Xendit & Database
         $externalId = 'DIMSAY-' . time() . '-' . $user->id;
 
-        // 4. Siapkan Request Invoice Xendit
+        // Siapkan Invoice Xendit
         $apiInstance = new InvoiceApi();
         $createInvoice = new CreateInvoiceRequest([
             'external_id' => $externalId,
@@ -75,37 +58,31 @@ class OrderController extends Controller
             'payer_email' => $user->email,
             'description' => 'Pembayaran Dimsaykuu: ' . implode(', ', $productDetails),
             'currency' => 'IDR',
-            // Aktifkan semua metode pembayaran populer
-            'payment_methods' => ['VIRTUAL_ACCOUNT', 'RETAIL_OUTLET', 'EWALLET', 'QRIS', 'DIRECT_DEBIT'],
+            // payment_methods DIHAPUS agar semua opsi muncul
             'success_redirect_url' => route('profile.history'),
             'failure_redirect_url' => route('cart.index'),
         ]);
 
         try {
-            // Panggil API Xendit
             $response = $apiInstance->createInvoice($createInvoice);
 
-            // 5. Simpan ke Tabel Orders di TiDB Cloud
-            DB::transaction(function () use ($user, $cartItems, $externalId, $response, $totalPrice, $request) {
-                foreach ($cartItems as $item) {
-                    Order::create([
-                        'user_id' => $user->id,
-                        'product_id' => $item->product_id,
-                        'order_id_midtrans' => $externalId, // external_id Xendit
-                        'product_name' => $item->product->name,
-                        'quantity' => $item->quantity,
-                        'price' => $item->product->price * $item->quantity,
-                        'status' => 'PENDING',
-                        'checkout_link' => $response['invoice_url'],
-                        'address' => $request->address,
-                    ]);
-                }
+            // Simpan ke database
+            foreach ($cartItems as $item) {
+                Order::create([
+                    'user_id' => $user->id,
+                    'order_id_midtrans' => $externalId,
+                    'product_name' => $item->product->name,
+                    'price' => $item->product->price * $item->quantity,
+                    'quantity' => $item->quantity,
+                    'product_id' => $item->product_id,
+                    'status' => 'PENDING',
+                    'checkout_link' => $response['invoice_url']
+                ]);
+            }
 
-                // 6. Kosongkan Keranjang setelah sukses buat invoice
-                Cart::where('user_id', $user->id)->delete();
-            });
+            // Kosongkan keranjang
+            Cart::where('user_id', $user->id)->delete();
 
-            // Redirect ke halaman pembayaran Xendit
             return redirect($response['invoice_url']);
 
         } catch (\Exception $e) {
@@ -113,20 +90,30 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Menampilkan halaman detail pembayaran (Invoice)
-     */
-    public function showPayment($id)
+    public function handleWebhook(Request $request)
     {
-        // Cari pesanan milik user yang sedang login
-        $order = Order::where('user_id', Auth::id())->findOrFail($id);
-
-        // Jika sudah lunas, arahkan ke riwayat dengan pesan sukses
-        if (in_array(strtoupper($order->status), ['PAID', 'SETTLEMENT', 'SUCCESS'])) {
-            return redirect()->route('profile.history')->with('success', 'Pesanan ini sudah lunas!');
+        if ($request->header('x-callback-token') !== config('services.xendit.callback_token')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Tampilkan view payment dengan data order
-        return view('user.payment', compact('order'));
+        $external_id = $request->external_id;
+        $status = strtoupper($request->status);
+
+        if ($status === 'PAID' || $status === 'SETTLEMENT') {
+            DB::transaction(function () use ($external_id) {
+                $orders = Order::where('order_id_midtrans', $external_id)->where('status', 'PENDING')->get();
+
+                foreach ($orders as $order) {
+                    $order->update(['status' => 'PAID']);
+
+                    $product = Product::find($order->product_id);
+                    if ($product) {
+                        $product->decrement('stock', $order->quantity);
+                    }
+                }
+            });
+        }
+
+        return response()->json(['status' => 'OK']);
     }
 }

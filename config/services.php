@@ -2,18 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Third Party Services
-    |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
-    */
-
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
@@ -32,21 +20,14 @@ return [
     ],
 
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),         // Panggil nama kuncinya
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // Panggil nama kuncinya
-        'redirect' => env('GOOGLE_REDIRECT_URL'),       // Panggil nama kuncinya
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URL'),
     ],
 
     'xendit' => [
-        // GANTI baris ini:
-        // 'secret_key' => env('XENDIT_SECRET_KEY'),
-        
-        // MENJADI ini (sesuai nama di .env kamu):
         'secret_key' => env('XENDIT_API_KEY'), 
-        
         'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
     ],
 
 ];
-
-    

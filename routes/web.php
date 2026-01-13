@@ -43,17 +43,23 @@ Route::get('/contact-us', fn() => view('pages.contact'));
 Route::get('/program', [PageController::class, 'program'])->name('program');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 
-// HALAMAN EVENT KULINER (M-BLOC / BLOK M) - BARU (Dari Agus)
+// HALAMAN EVENT KULINER
 Route::get('/event-kuliner', [EventController::class, 'index'])->name('events.index');
 
-// Rute Xendit Callback (Sebaiknya di luar auth middleware agar bisa diakses server Xendit)
+// Rute Xendit Callback (Di luar auth middleware)
 Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
 
 // =====================
 // 2. KHUSUS LOGIN ADMIN
 // =====================
-Route::get('/admin/login', [LoginController::class, 'showAdminLoginForm'])->name('admin.login');
-Route::post('/admin/login', [LoginController::class, 'loginAdmin'])->name('admin.login.submit');
+// PERBAIKAN: Ditambahkan middleware('guest') agar yang sudah login tidak bisa akses
+Route::get('/admin/login', [LoginController::class, 'showAdminLoginForm'])
+    ->name('admin.login')
+    ->middleware('guest');
+
+Route::post('/admin/login', [LoginController::class, 'loginAdmin'])
+    ->name('admin.login.submit')
+    ->middleware('guest');
 
 
 // =====================
@@ -87,13 +93,13 @@ Route::middleware(['auth'])->group(function () {
     // Jalur untuk proses verifikasi upload bukti (Manual Verify)
     Route::post('/payment/{id}/verify', [OrderController::class, 'pay'])->name('pay');
 
-    // E. KERANJANG BELANJA (CART) - FITUR BARU
+    // E. KERANJANG BELANJA (CART)
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{productId}', [CartController::class, 'store'])->name('cart.add');
     Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.remove');
 
-    // F. MENU FAVORIT (WISHLIST) - FITUR BARU
+    // F. MENU FAVORIT (WISHLIST)
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/favorites/toggle/{productId}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 });
@@ -102,14 +108,14 @@ Route::middleware(['auth'])->group(function () {
 // =====================
 // 5. GROUP ADMIN & POLICE
 // =====================
-// Middleware 'is_admin' sudah didaftarkan di Kernel
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
 
     Route::get('/users', [AdminController::class, 'users'])->name('users');
 
     // A. Dashboard Utama
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-Route::get('/orders/export', [AdminController::class, 'exportOrders'])->name('orders.export');
+    Route::get('/orders/export', [AdminController::class, 'exportOrders'])->name('orders.export');
+    
     // B. CRUD Produk (Staff & Police)
     Route::resource('products', ProductController::class);
 
@@ -120,27 +126,23 @@ Route::get('/orders/export', [AdminController::class, 'exportOrders'])->name('or
     Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
     // D. MENU KHUSUS POLICE / SUPERADMIN
-    // Staff (Admin biasa) tidak bisa akses group ini
     Route::middleware(['police'])->group(function () {
-        
         Route::get('/users/trash', [AdminController::class, 'trashUsers'])->name('users.trash');
         Route::get('/users/restore/{id}', [AdminController::class, 'restoreUser'])->name('users.restore');
-        
-        // MANAGE ADMINS (Hanya Police/Superadmin)
         Route::get('/manage-admins', [AdminController::class, 'listAdmins'])->name('manage.admins');
-        
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
     });
 });
 
-// Rute yang membutuhkan login (Auth)
+// Rute yang membutuhkan login (Auth) - Tambahan Payment Xendit & Simulate
 Route::middleware(['auth'])->group(function () {
-Route::post('/payment/{id}/simulate', [OrderController::class, 'simulatePaymentSuccess'])->name('payment.simulate');
+    // Route Simulasi Pembayaran (Cheat)
+    Route::post('/payment/{id}/simulate', [OrderController::class, 'simulatePaymentSuccess'])->name('payment.simulate');
     
     // 1. Rute menampilkan Form Pemesanan
     Route::get('/order/form/{id}', [XenditWebhookController::class, 'showOrderForm'])->name('order.form');
 
-    // 2. Rute memproses Checkout (Ini yang menyebabkan error 404 jika tidak ada)
+    // 2. Rute memproses Checkout
     Route::post('/xendit/pay', [XenditWebhookController::class, 'checkout'])->name('xendit.pay');
 
     // 3. Rute Halaman Sukses
@@ -148,6 +150,7 @@ Route::post('/payment/{id}/simulate', [OrderController::class, 'simulatePaymentS
         return view('pages.payment_success');
     })->name('payment.success');
 });
+
 // =====================
 // 6. FALLBACK (Halaman 404)
 // =====================

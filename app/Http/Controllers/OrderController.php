@@ -24,22 +24,22 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
+        // Validasi Input
         $request->validate([
-            'address' => 'required|string|min:10',
+            'address' => 'required|string|min:10', // Wajib diisi buat Invoice
         ]);
 
+        // Ambil Keranjang
         $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
 
-        // --- BAGIAN YANG TADI ERROR SUDAH DIPERBAIKI ---
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
         }
-        // ----------------------------------------------
 
         $totalPrice = 0;
         $productDetails = [];
 
-        // Validasi stok
+        // Validasi stok & Hitung Total
         foreach ($cartItems as $item) {
             if ($item->product->stock < $item->quantity) {
                 return back()->with('error', "Stok {$item->product->name} tidak mencukupi.");
@@ -48,6 +48,7 @@ class OrderController extends Controller
             $productDetails[] = "{$item->product->name} ({$item->quantity})";
         }
 
+        // Buat External ID Unik (Satu Invoice untuk banyak item)
         $externalId = 'DIMSAY-' . time() . '-' . $user->id;
 
         // Siapkan Invoice Xendit
@@ -58,38 +59,42 @@ class OrderController extends Controller
             'payer_email' => $user->email,
             'description' => 'Pembayaran Dimsaykuu: ' . implode(', ', $productDetails),
             'currency' => 'IDR',
-            // payment_methods DIHAPUS agar semua opsi muncul
             'success_redirect_url' => route('profile.history'),
             'failure_redirect_url' => route('cart.index'),
         ]);
 
         try {
+            // Kirim Request ke Xendit
             $response = $apiInstance->createInvoice($createInvoice);
 
-            // Simpan ke database
+            // Simpan ke database (Looping per item keranjang)
             foreach ($cartItems as $item) {
                 Order::create([
                     'user_id' => $user->id,
-                    'order_id_midtrans' => $externalId,
+                    'order_id_midtrans' => $externalId, // ID Invoice Gabungan
                     'product_name' => $item->product->name,
                     'price' => $item->product->price * $item->quantity,
                     'quantity' => $item->quantity,
                     'product_id' => $item->product_id,
                     'status' => 'PENDING',
-                    'checkout_link' => $response['invoice_url']
+                    'checkout_link' => $response['invoice_url'],
+                    'address' => $request->address, // <--- PENTING: Simpan Alamat
                 ]);
             }
 
-            // Kosongkan keranjang
+            // Kosongkan keranjang setelah order dibuat
             Cart::where('user_id', $user->id)->delete();
 
+            // Redirect langsung ke halaman pembayaran Xendit
             return redirect($response['invoice_url']);
 
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal terhubung ke Xendit: ' . $e->getMessage());
         }
     }
-// --- TAMBAHAN UNTUK TESTING MANUAL (SIMULASI) ---
+
+    // --- FITUR SIMULASI BAYAR (ACC MANUAL) ---
+    // Bisa dipakai User (Test) atau Admin (Verifikasi Manual)
     public function simulatePaymentSuccess($id)
     {
         // 1. Cari satu order buat dapet External ID-nya
@@ -98,16 +103,16 @@ class OrderController extends Controller
 
         // 2. Gunakan logic transaksi biar aman
         DB::transaction(function () use ($external_id) {
-            // Ambil semua item dalam satu nota invoice ini
+            // Ambil semua item dalam satu nota invoice ini yang belum bayar
             $orders = Order::where('order_id_midtrans', $external_id)
-                           ->where('status', 'PENDING') // Cuma yang belum bayar
+                           ->where('status', 'PENDING')
                            ->get();
 
             foreach ($orders as $o) {
-                // Update Status
+                // Update Status jadi PAID
                 $o->update(['status' => 'PAID']);
 
-                // Kurangi Stok Produk (Sama kayak logic webhook)
+                // Kurangi Stok Produk Real-time
                 $product = Product::find($o->product_id);
                 if ($product) {
                     $product->decrement('stock', $o->quantity);
@@ -115,9 +120,13 @@ class OrderController extends Controller
             }
         });
 
-        // 3. Balikin ke halaman history dengan pesan sukses
-        return redirect()->route('profile.history')->with('success', 'Simulasi Pembayaran Berhasil! (Mode Test)');
+        // 3. PERBAIKAN: Gunakan back() agar fleksibel
+        // Kalau Admin klik dari Dashboard -> Balik ke Dashboard
+        // Kalau User klik dari History -> Balik ke History
+        return back()->with('success', 'Pembayaran Berhasil Diverifikasi (ACC Manual)!');
     }
+
+    // --- WEBHOOK XENDIT (Otomatis) ---
     public function handleWebhook(Request $request)
     {
         if ($request->header('x-callback-token') !== config('services.xendit.callback_token')) {
@@ -129,7 +138,9 @@ class OrderController extends Controller
 
         if ($status === 'PAID' || $status === 'SETTLEMENT') {
             DB::transaction(function () use ($external_id) {
-                $orders = Order::where('order_id_midtrans', $external_id)->where('status', 'PENDING')->get();
+                $orders = Order::where('order_id_midtrans', $external_id)
+                               ->where('status', 'PENDING')
+                               ->get();
 
                 foreach ($orders as $order) {
                     $order->update(['status' => 'PAID']);
@@ -145,17 +156,31 @@ class OrderController extends Controller
         return response()->json(['status' => 'OK']);
     }
 
+    // --- HALAMAN DETAIL PEMBAYARAN (Opsional) ---
     public function showPayment($id)
     {
-        // Cari pesanan berdasarkan ID milik user yang login
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
-        // Jika status sudah PAID, arahkan kembali ke riwayat agar tidak membayar dua kali
         if (in_array(strtoupper($order->status), ['PAID', 'SETTLEMENT', 'SUCCESS'])) {
             return redirect()->route('profile.history')->with('success', 'Pesanan ini sudah lunas!');
         }
 
-        // Tampilkan view payment dengan data order
         return view('user.payment', compact('order'));
+    }
+
+    // --- HALAMAN INVOICE / NOTA DIGITAL ---
+    public function showInvoice($id)
+    {
+        $order = Order::findOrFail($id);
+        $user = Auth::user();
+
+        // Validasi Keamanan:
+        // Invoice cuma boleh dilihat oleh: Pemilik Order, Admin, atau Police
+        if ($order->user_id != $user->id && $user->role != 'admin' && $user->role != 'police') {
+            abort(403, 'Anda tidak memiliki akses ke invoice ini.');
+        }
+
+        // Tampilkan view invoice (resources/views/user/invoice.blade.php)
+        return view('user.invoice', compact('order'));
     }
 }

@@ -138,7 +138,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
 Route::middleware(['auth'])->group(function () {
     // Route Simulasi Pembayaran (Cheat)
     Route::post('/payment/{id}/simulate', [OrderController::class, 'simulatePaymentSuccess'])->name('payment.simulate');
-    
+    Route::get('/order/{id}/invoice', [OrderController::class, 'showInvoice'])->name('order.invoice');
     // 1. Rute menampilkan Form Pemesanan
     Route::get('/order/form/{id}', [XenditWebhookController::class, 'showOrderForm'])->name('order.form');
 

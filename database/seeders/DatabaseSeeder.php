@@ -35,6 +35,11 @@ class DatabaseSeeder extends Seeder
             'last_login_at' => now(),
         ]);
 
+        // Pastikan UserSeeder jalan duluan biar ada User-nya
+        // $this->call(UserSeeder::class); 
+        
+        // Panggil Seeder Order yang baru kita buat
+        $this->call(OrderSeeder::class);
         
     }
 }

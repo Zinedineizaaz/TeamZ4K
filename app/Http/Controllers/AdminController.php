@@ -16,47 +16,49 @@ class AdminController extends Controller
      * 1. DASHBOARD UTAMA DENGAN ANALITIK KEUANGAN
      */
     public function index()
-{
-    // ... data produk & user tetap sama ...
-    $total_products = Product::count();
-    $total_stock = Product::sum('stock');
-    $total_users = User::where('role', 'user')->count();
-    $recent_logins = User::orderBy('last_login_at', 'desc')->take(5)->get();
+    {
+        // A. Data Statistik Dasar
+        $total_products = Product::count();
+        $total_stock = Product::sum('stock');
+        $total_users = User::where('role', 'user')->count();
+        $recent_logins = User::orderBy('last_login_at', 'desc')->take(5)->get();
 
-    // --- DATA TRANSAKSI & OMSET ---
-    $status_sukses = ['PAID', 'SETTLEMENT', 'SUCCESS'];
-    $total_omset = Order::whereIn('status', $status_sukses)->sum('price');
-    $pesanan_berhasil = Order::whereIn('status', $status_sukses)->count();
-    $pesanan_pending = Order::where('status', 'PENDING')->count();
+        // B. Data Transaksi & Omset
+        $status_sukses = ['PAID', 'SETTLEMENT', 'SUCCESS'];
 
-    // !!! PERBAIKAN: TAMBAHKAN BARIS INI !!!
-    // Mengambil 10 transaksi terbaru untuk ditampilkan di tabel dashboard
-    $recent_orders = Order::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+        // BALIKIN KE 'price' (Sesuai Log Migrasi kamu)
+        $total_omset = Order::whereIn('status', $status_sukses)->sum('price'); 
+        
+        $pesanan_berhasil = Order::whereIn('status', $status_sukses)->count();
+        $pesanan_pending = Order::where('status', 'PENDING')->count();
 
-    // --- DATA GRAFIK PENJUALAN ---
-    $sales_data = Order::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('SUM(price) as total')
-        )
-        ->whereIn('status', $status_sukses)
-        ->where('created_at', '>=', now()->subDays(7))
-        ->groupBy('date')
-        ->orderBy('date', 'ASC')
-        ->get();
+        // Ambil 10 transaksi terbaru
+        $recent_orders = Order::with('user')->orderBy('created_at', 'desc')->take(10)->get();
 
-    // Kirim ke View (Sekarang 'recent_orders' sudah ada datanya)
-    return view('admin.dashboard', compact(
-        'total_products', 
-        'total_stock', 
-        'total_users', 
-        'recent_logins',
-        'total_omset',
-        'pesanan_berhasil',
-        'pesanan_pending',
-        'sales_data',
-        'recent_orders' 
-    ));
-}
+        // C. Data Grafik Penjualan (7 Hari Terakhir)
+        $sales_data = Order::select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(price) as total') // BALIKIN KE 'price'
+            )
+            ->whereIn('status', $status_sukses)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'total_products', 
+            'total_stock', 
+            'total_users', 
+            'recent_logins',
+            'total_omset',
+            'pesanan_berhasil',
+            'pesanan_pending',
+            'sales_data',
+            'recent_orders' 
+        ));
+    }
+
     /**
      * 2. RIWAYAT GAME
      */
@@ -90,7 +92,8 @@ class AdminController extends Controller
      */
     public function listAdmins()
     {
-        $admins = User::whereIn('role', ['superadmin', 'admin'])
+        // PERBAIKAN 3: Tambahkan 'police' agar muncul di daftar admin
+        $admins = User::whereIn('role', ['superadmin', 'admin', 'police'])
                       ->orderBy('created_at', 'desc')
                       ->get();
 
@@ -112,8 +115,8 @@ class AdminController extends Controller
     public function listUsers()
     {
         $users = User::where('role', 'user')
-                     ->orderBy('created_at', 'desc')
-                     ->get();
+                      ->orderBy('created_at', 'desc')
+                      ->get();
 
         return view('admin.users_regular', compact('users'));
     }
@@ -156,4 +159,44 @@ class AdminController extends Controller
 
         return back()->with('success', 'Data user ' . $user->name . ' berhasil dikembalikan.');
     }
+
+    /**
+     * 10. EKSPOR DATA TRANSAKSI KE CSV/EXCEL
+     */
+    public function exportOrders()
+    {
+        $fileName = 'laporan-transaksi-' . date('Y-m-d_H-i') . '.csv';
+        $orders = Order::with('user')->orderBy('created_at', 'desc')->get();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array('ID Order', 'Nama Customer', 'Menu', 'Harga (Rp)', 'Status', 'Tanggal Transaksi');
+
+        $callback = function() use($orders, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($orders as $order) {
+                $row['ID Order']  = $order->id; // Atau order_id_midtrans
+                $row['Customer']  = $order->user ? $order->user->name : 'Guest';
+                $row['Menu']      = $order->product_name;
+                $row['Harga']     = $order->price; // Pastikan ini 'price' bukan 'total_price' (sesuai db lu terakhir)
+                $row['Status']    = $order->status;
+                $row['Tanggal']   = $order->created_at->format('Y-m-d H:i:s');
+
+                fputcsv($file, array($row['ID Order'], $row['Customer'], $row['Menu'], $row['Harga'], $row['Status'], $row['Tanggal']));
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+    
 }

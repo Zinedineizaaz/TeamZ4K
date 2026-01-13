@@ -11,11 +11,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-    use SoftDeletes;
-<<<<<<< HEAD
-=======
+    use SoftDeletes; 
 
->>>>>>> Agus
     /**
      * The attributes that are mass assignable.
      *
@@ -25,11 +22,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',          // <--- JANGAN LUPA TAMBAHKAN INI (Wajib buat fitur Police)
-        'last_login_at', // <--- Tambahkan ini juga biar aman
-        'avatar',        // <--- Tambahkan ini juga jika Anda menggunakan fitur upload foto
+        'role',          // Wajib buat fitur Police
+        'last_login_at', // Biar aman
+        'avatar',        // Untuk foto profil
     ];
 
+    // ... sisa kodingan ke bawah biarin aja ...
     /**
      * The attributes that should be hidden for serialization.
      *

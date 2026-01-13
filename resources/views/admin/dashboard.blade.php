@@ -69,6 +69,9 @@
                 {{-- Sisipkan bagian ini setelah penutup Row Statistik Finansial dan sebelum Grafik Analitik --}}
 
 <h4 class="fw-bold mb-3 text-dark mt-4"><i class="bi bi-cart-check me-2"></i>Riwayat Pembelian Terbaru</h4>
+<a href="{{ route('admin.orders.export') }}" class="btn btn-success">
+        <i class="fas fa-file-excel"></i> Export ke Excel (CSV)
+    </a>
 <div class="card border-0 shadow-sm mb-5">
     <div class="card-body p-0">
         <div class="table-responsive">

@@ -15,7 +15,7 @@
             
             {{-- FOTO TIM UTAMA --}}
             <div class="position-relative mb-5 d-inline-block">
-                <img src="{{ asset('images/team.PNG') }}" 
+                <img src="{{ asset('images/team.png') }}" 
                      alt="Foto Tim Dimsaykuu" 
                      class="img-fluid rounded-4 shadow-lg"
                      style="max-height: 450px; object-fit: cover; border: 8px solid white;">

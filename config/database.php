@@ -60,7 +60,7 @@ return [
             'engine' => null,
             // --- PERBAIKAN DI SINI ---
             'options' => extension_loaded('pdo_mysql') ? [
-                PDO::MYSQL_ATTR_SSL_CA => true,
+                1014 => 1,
             ] : [],
         ],
         'pgsql' => [

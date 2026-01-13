@@ -13,11 +13,17 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\OrderController;
+<<<<<<< HEAD
 use App\Http\Controllers\XenditWebhookController;
+=======
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\EventController; // <--- TAMBAHAN: Import EventController
+>>>>>>> Agus
 
 /*
 |--------------------------------------------------------------------------
-| WEB ROUTES (FULL VERSION - FIXED)
+| WEB ROUTES (FULL VERSION)
 |--------------------------------------------------------------------------
 */
 
@@ -36,9 +42,12 @@ Route::get('/about', fn() => view('pages.about'));
 Route::get('/our-team', fn() => view('pages.team'));
 Route::get('/contact-us', fn() => view('pages.contact'));
 
-// Halaman Program
+// Halaman Program & Menu
 Route::get('/program', [PageController::class, 'program'])->name('program');
 Route::get('/menu', [PageController::class, 'menu'])->name('menu');
+
+// HALAMAN EVENT KULINER (M-BLOC / BLOK M) - BARU
+Route::get('/event-kuliner', [EventController::class, 'index'])->name('events.index');
 
 
 // =====================
@@ -70,9 +79,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/lucky-klakat/play', [GameController::class, 'play'])->name('game.play');
     Route::get('/lucky-klakat', [GameController::class, 'index'])->name('game.index');
 
-    // D. SISTEM PESANAN & PEMBAYARAN (BARU)
-    // Jalur untuk buat pesanan
+    // D. SISTEM PESANAN & PEMBAYARAN (XENDIT INTEGRATED)
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+<<<<<<< HEAD
 
     // Rute ini harus bisa diakses publik oleh server Xendit
     Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
@@ -81,12 +90,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
 
     // Jalur untuk proses verifikasi upload bukti
+=======
+    Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment');
+    // Note: Verify biasanya ditangani via Callback API, tapi tetap disediakan jika butuh manual verify
+>>>>>>> Agus
     Route::post('/payment/{id}/verify', [OrderController::class, 'pay'])->name('pay');
+
+    // E. KERANJANG BELANJA (CART)
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{productId}', [CartController::class, 'store'])->name('cart.add');
+    Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'destroy'])->name('cart.remove');
+
+    // F. MENU FAVORIT (WISHLIST)
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/toggle/{productId}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 });
 
 
 // =====================
-// 5. GROUP ADMIN & POLICE (Dashboard & Manajemen)
+// 5. GROUP ADMIN & POLICE
 // =====================
 // PERBAIKAN: Menambahkan 'is_admin' ke dalam middleware group
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
@@ -101,8 +124,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
 
     Route::get('/game-history', [AdminController::class, 'gameHistory'])->name('game.history');
 
+<<<<<<< HEAD
     // C. Kelola User / Pelanggan (Staff & Police)
     // Rute ini sekarang otomatis terlindungi oleh 'is_admin' di atas
+=======
+    // C. Kelola User / Pelanggan
+>>>>>>> Agus
     Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
     Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
@@ -119,7 +146,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
         
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
     });
-
 });
 
 // =====================

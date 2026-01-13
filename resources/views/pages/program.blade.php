@@ -50,21 +50,23 @@
         </div>
 
         {{-- Kartu Promo 3 --}}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-lg border-0 h-100 hover-card" style="border-top: 5px solid var(--dimsai-red) !important;">
-                <div class="card-body text-center p-4">
-                    <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
-                        <i class="bi bi-calendar-event-fill display-4" style="color: var(--dimsai-red);"></i>
-                    </div>
-                    <h5 class="card-title fw-bold" style="color: var(--dimsai-red);">Event Kuliner Terbaru</h5>
-                    <p class="card-text text-muted">Ikuti kami di berbagai food bazaar dan pop-up event terdekat di kotamu.</p>
-                    <a href="{{ url('/contact-us') }}" class="btn btn-outline-danger mt-3 w-100 rounded-pill">
-                        <i class="bi bi-geo-alt me-2"></i>Cek Jadwal
-                    </a>
-                </div>
+<div class="col-md-4 mb-4">
+    <div class="card shadow-lg border-0 h-100 hover-card" style="border-top: 5px solid var(--dimsai-red) !important;">
+        <div class="card-body text-center p-4">
+            <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+                <i class="bi bi-calendar-event-fill display-4" style="color: var(--dimsai-red);"></i>
             </div>
+            <h5 class="card-title fw-bold" style="color: var(--dimsai-red);">Event Kuliner Terbaru</h5>
+            <p class="card-text text-muted">Ikuti kami di berbagai food bazaar dan pop-up event terdekat di kotamu.</p>
+            
+            {{-- PERBAIKAN DI SINI: Ganti href ke route events.index --}}
+            <a href="{{ route('events.index') }}" class="btn btn-outline-danger mt-3 w-100 rounded-pill">
+                <i class="bi bi-geo-alt me-2"></i>Cek Jadwal
+            </a>
+            
         </div>
     </div>
+</div>
 
     {{-- ========================================== --}}
     {{-- BAGIAN 2: LOYALTY PROGRAM & GAME           --}}

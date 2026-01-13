@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
     use SoftDeletes;
+<<<<<<< HEAD
+=======
+
+>>>>>>> Agus
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +27,7 @@ class User extends Authenticatable
         'password',
         'role',          // <--- JANGAN LUPA TAMBAHKAN INI (Wajib buat fitur Police)
         'last_login_at', // <--- Tambahkan ini juga biar aman
+        'avatar',        // <--- Tambahkan ini juga jika Anda menggunakan fitur upload foto
     ];
 
     /**
@@ -40,33 +45,49 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
-    
     protected $casts = [
-    'email_verified_at' => 'datetime',
-    'last_login_at' => 'datetime',
-];
-/**
- * Send the password reset notification.
- *
- * @param  string  $token
- * @return void
- */
-public function sendPasswordResetNotification($token)
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+    ];
+
+    /**
+     * ==========================================
+     * RELASI (TAMBAHAN BARU)
+     * ==========================================
+     */
+
+    // Menghubungkan User ke data Keranjang miliknya
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    // Menghubungkan User ke daftar Menu Favorit miliknya
+   public function favorites()
 {
-    // Kita timpa fungsi bawaan Laravel di sini
-    $this->notify(new CustomResetPasswordNotification($token));
+    return $this->hasMany(\App\Models\Favorite::class);
 }
 
-public function getJoinedDateAttribute()
+    /**
+     * ==========================================
+     * NOTIFIKASI & ACCESSORS (LAMA ANDA)
+     * ==========================================
+     */
+
+    public function sendPasswordResetNotification($token)
+    {
+        // Kita timpa fungsi bawaan Laravel di sini
+        $this->notify(new CustomResetPasswordNotification($token));
+    }
+
+    public function getJoinedDateAttribute()
     {
         return $this->created_at->format('d F Y, H:i'); // Contoh: 06 January 2026, 13:00
     }
 
     // Accessor: Bikin nama jadi huruf besar awal kata otomatis
-    // Cara panggil di blade: {{ $user->name }} (Otomatis rapi)
     public function getNameAttribute($value)
     {
         return ucwords(strtolower($value));
     }
-
 }

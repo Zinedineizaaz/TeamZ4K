@@ -16,45 +16,47 @@ class AdminController extends Controller
      * 1. DASHBOARD UTAMA DENGAN ANALITIK KEUANGAN
      */
     public function index()
-    {
-        // --- DATA PRODUK & USER (LAMA) ---
-        $total_products = Product::count();
-        $total_stock = Product::sum('stock');
-        $total_users = User::where('role', 'user')->count();
-        $recent_logins = User::orderBy('last_login_at', 'desc')->take(5)->get();
+{
+    // ... data produk & user tetap sama ...
+    $total_products = Product::count();
+    $total_stock = Product::sum('stock');
+    $total_users = User::where('role', 'user')->count();
+    $recent_logins = User::orderBy('last_login_at', 'desc')->take(5)->get();
 
-        // --- DATA TRANSAKSI & OMSET (BARU) ---
-        // Kita hanya menghitung yang statusnya sudah dibayar
-        $status_sukses = ['PAID', 'SETTLEMENT', 'SUCCESS'];
-        
-        $total_omset = Order::whereIn('status', $status_sukses)->sum('price');
-        $pesanan_berhasil = Order::whereIn('status', $status_sukses)->count();
-        $pesanan_pending = Order::where('status', 'PENDING')->count();
+    // --- DATA TRANSAKSI & OMSET ---
+    $status_sukses = ['PAID', 'SETTLEMENT', 'SUCCESS'];
+    $total_omset = Order::whereIn('status', $status_sukses)->sum('price');
+    $pesanan_berhasil = Order::whereIn('status', $status_sukses)->count();
+    $pesanan_pending = Order::where('status', 'PENDING')->count();
 
-        // --- DATA GRAFIK PENJUALAN (7 Hari Terakhir) ---
-        $sales_data = Order::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(price) as total')
-            )
-            ->whereIn('status', $status_sukses)
-            ->where('created_at', '>=', now()->subDays(7))
-            ->groupBy('date')
-            ->orderBy('date', 'ASC')
-            ->get();
+    // !!! PERBAIKAN: TAMBAHKAN BARIS INI !!!
+    // Mengambil 10 transaksi terbaru untuk ditampilkan di tabel dashboard
+    $recent_orders = Order::with('user')->orderBy('created_at', 'desc')->take(10)->get();
 
-        // Kirim semua data ke View
-        return view('admin.dashboard', compact(
-            'total_products', 
-            'total_stock', 
-            'total_users', 
-            'recent_logins',
-            'total_omset',
-            'pesanan_berhasil',
-            'pesanan_pending',
-            'sales_data'
-        ));
-    }
+    // --- DATA GRAFIK PENJUALAN ---
+    $sales_data = Order::select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('SUM(price) as total')
+        )
+        ->whereIn('status', $status_sukses)
+        ->where('created_at', '>=', now()->subDays(7))
+        ->groupBy('date')
+        ->orderBy('date', 'ASC')
+        ->get();
 
+    // Kirim ke View (Sekarang 'recent_orders' sudah ada datanya)
+    return view('admin.dashboard', compact(
+        'total_products', 
+        'total_stock', 
+        'total_users', 
+        'recent_logins',
+        'total_omset',
+        'pesanan_berhasil',
+        'pesanan_pending',
+        'sales_data',
+        'recent_orders' 
+    ));
+}
     /**
      * 2. RIWAYAT GAME
      */

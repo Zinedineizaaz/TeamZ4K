@@ -44,25 +44,26 @@ return [
         ],
 
         'mysql' => [
-            'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'),
-            'port' => env('DB_PORT', '4000'),
-            'database' => env('DB_DATABASE', 'Dimsayku'),
-            'username' => env('DB_USERNAME', 'EY97xZRogLRqWj.root'),
-            'password' => env('DB_PASSWORD', '2NLQQjEZqZjPWe9H'),
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-          'options' => [
-                // Kita pake path Windows lengkap & pake double slash (\\) biar aman
-                PDO::MYSQL_ATTR_SSL_CA => 'C:\\Users\\Axioo\\Downloads\\TeamZ4K\\certs\\isrgrootx1.pem',
-            ],
-        ],
+    'driver' => 'mysql',
+    'url' => env('DATABASE_URL'),
+    'host' => env('DB_HOST', '127.0.0.1'), // Akan mengambil dari .env
+    'port' => env('DB_PORT', '3306'),      // Akan mengambil dari .env
+    'database' => env('DB_DATABASE', 'laravel'),
+    'username' => env('DB_USERNAME', 'root'),
+    'password' => env('DB_PASSWORD', ''),
+    'unix_socket' => env('DB_SOCKET', ''),
+    'charset' => 'utf8mb4',
+    'collation' => 'utf8mb4_unicode_ci',
+    'prefix' => '',
+    'prefix_indexes' => true,
+    'strict' => true,
+    'engine' => null,
+    
+    // UBAH BAGIAN INI: Komentari agar tidak mencari file .pem
+    'options' => extension_loaded('pdo_mysql') ? array_filter([
+        // PDO::MYSQL_ATTR_SSL_CA => 'C:\\Users\\Axioo\\Downloads\\TeamZ4K\\certs\\isrgrootx1.pem',
+    ]) : [],
+],
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

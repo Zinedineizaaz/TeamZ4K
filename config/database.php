@@ -58,17 +58,10 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-<<<<<<< Updated upstream
-            // --- PERBAIKAN DI SINI ---
-            'options' => extension_loaded('pdo_mysql') ? [
-                PDO::MYSQL_ATTR_SSL_CA => true,
-            ] : [],
-=======
           'options' => [
                 // Kita pake path Windows lengkap & pake double slash (\\) biar aman
                 PDO::MYSQL_ATTR_SSL_CA => 'C:\\Users\\Axioo\\Downloads\\TeamZ4K\\certs\\isrgrootx1.pem',
             ],
->>>>>>> Stashed changes
         ],
         'pgsql' => [
             'driver' => 'pgsql',

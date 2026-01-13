@@ -106,12 +106,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::get('/manage-users', [AdminController::class, 'users'])->name('manage.users');
     Route::get('/manage-users/print', [AdminController::class, 'printUsers'])->name('users.print');
 
+    
     // D. MENU KHUSUS POLICE / SUPERADMIN
-    // Tetap menggunakan 'police' jika ini adalah level di atas admin biasa
+    // Staff (Admin) gak bakal bisa akses yang ada di dalam group ini
     Route::middleware(['police'])->group(function () {
+        
         Route::get('/users/trash', [AdminController::class, 'trashUsers'])->name('users.trash');
         Route::get('/users/restore/{id}', [AdminController::class, 'restoreUser'])->name('users.restore');
+        
+        // INI DIA YANG MAU KITA LINDUNGI
         Route::get('/manage-admins', [AdminController::class, 'listAdmins'])->name('manage.admins');
+        
         Route::delete('/users/delete/{id}', [AdminController::class, 'destroyUser'])->name('users.delete');
     });
 

@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage; // Gunakan Storage untuk fleksibilitas
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
@@ -33,27 +31,22 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|integer|min:1000',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
+        // Langsung upload ke Cloudinary
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                'folder' => 'dimsaykuu_products',
+            ])->getSecurePath();
 
-            // SOLUSI VERCEL: Hanya simpan ke public_path jika di lingkungan lokal
-            if (config('app.env') === 'local') {
-                $file->move(public_path('products'), $fileName);
-                $validated['image'] = $fileName;
-            } else {
-                // Di Vercel (Production), kita gunakan URL placeholder agar tidak error
-                $validated['image'] = 'https://via.placeholder.com/150';
-            }
+            $validated['image'] = $uploadedFileUrl;
         }
 
         $validated['is_promo'] = $request->has('is_promo');
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan ke Cloudinary!');
     }
 
     public function edit(Product $product)
@@ -72,40 +65,39 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Hapus lama hanya jika di lokal
-            if (config('app.env') === 'local' && $product->image && file_exists(public_path('products/' . $product->image))) {
-                unlink(public_path('products/' . $product->image));
+            // Hapus gambar lama dari Cloudinary jika ada
+            if ($product->image && str_contains($product->image, 'cloudinary')) {
+                $publicId = 'dimsaykuu_products/' . pathinfo($product->image, PATHINFO_FILENAME);
+                Cloudinary::destroy($publicId);
             }
 
-            $file = $request->file('image');
-            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            // Upload gambar baru
+            $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                'folder' => 'dimsaykuu_products',
+            ])->getSecurePath();
 
-            if (config('app.env') === 'local') {
-                $file->move(public_path('products'), $fileName);
-                $validated['image'] = $fileName;
-            } else {
-                $validated['image'] = 'https://via.placeholder.com/150';
-            }
+            $validated['image'] = $uploadedFileUrl;
         } else {
+            // Jika tidak upload gambar baru, biarkan gambar lama tetap ada
             unset($validated['image']);
         }
 
         $validated['is_promo'] = $request->has('is_promo');
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui di Cloud!');
     }
 
     public function destroy(Product $product)
     {
-        $this->authorize('delete', $product);
-
-        if (config('app.env') === 'local' && $product->image && !str_starts_with($product->image, 'http') && file_exists(public_path('products/' . $product->image))) {
-            unlink(public_path('products/' . $product->image));
+        // Hapus aset dari Cloudinary saat data dihapus dari database TiDB
+        if ($product->image && str_contains($product->image, 'cloudinary')) {
+            $publicId = 'dimsaykuu_products/' . pathinfo($product->image, PATHINFO_FILENAME);
+            Cloudinary::destroy($publicId);
         }
 
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dimusnahkan oleh Police!');
+        return redirect()->route('admin.products.index')->with('success', 'Produk dan gambar Cloudinary berhasil dihapus!');
     }
 }

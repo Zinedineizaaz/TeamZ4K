@@ -112,4 +112,21 @@ class OrderController extends Controller
             return back()->with('error', 'Gagal terhubung ke Xendit: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Menampilkan halaman detail pembayaran (Invoice)
+     */
+    public function showPayment($id)
+    {
+        // Cari pesanan milik user yang sedang login
+        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+
+        // Jika sudah lunas, arahkan ke riwayat dengan pesan sukses
+        if (in_array(strtoupper($order->status), ['PAID', 'SETTLEMENT', 'SUCCESS'])) {
+            return redirect()->route('profile.history')->with('success', 'Pesanan ini sudah lunas!');
+        }
+
+        // Tampilkan view payment dengan data order
+        return view('user.payment', compact('order'));
+    }
 }

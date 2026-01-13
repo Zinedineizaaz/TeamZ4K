@@ -18,19 +18,19 @@
 
         <div class="carousel-inner rounded-3" style="max-height: 450px;">
             <div class="carousel-item active" data-bs-interval="4000">
-                <img src="{{ asset('images/dimsum1.PNG') }}" class="d-block w-100" alt="Dimsum Pilihan" style="object-fit: cover; height: 450px;">
+                <img src="{{ asset('images/dimsum1.png') }}" class="d-block w-100" alt="Dimsum Pilihan" style="object-fit: cover; height: 450px;">
                 <div class="carousel-caption d-none d-md-block p-2 text-center" style="position: static; background-color: white; color: black;">
                     <h5 class="fw-bold" style="color: var(--dimsai-red);">Selamat Datang di Dimsaykuu!</h5>
                 </div>
             </div>
             <div class="carousel-item" data-bs-interval="4000">
-                <img src="{{ asset('images/dimsum2.PNG') }}" class="d-block w-100" alt="Promo Dimsum" style="object-fit: cover; height: 450px;">
+                <img src="{{ asset('images/dimsum2.png') }}" class="d-block w-100" alt="Promo Dimsum" style="object-fit: cover; height: 450px;">
                 <div class="carousel-caption d-none d-md-block p-2 text-center" style="position: static; background-color: white; color: black;">
                     <h5 class="fw-bold" style="color: var(--dimsai-red);">Cek Promo Spesial Mingguan Kami!</h5>
                 </div>
             </div>
             <div class="carousel-item" data-bs-interval="4000">
-                <img src="{{ asset('images/dimsum3.PNG') }}" class="d-block w-100" alt="Varian Dimsum" style="object-fit: cover; height: 450px;">
+                <img src="{{ asset('images/dimsum3.png') }}" class="d-block w-100" alt="Varian Dimsum" style="object-fit: cover; height: 450px;">
                 <div class="carousel-caption d-none d-md-block p-2 text-center" style="position: static; background-color: white; color: black;">
                     <h5 class="fw-bold" style="color: var(--dimsai-red);">Dimsum Lezat, Harga Bersahabat. Pesan Sekarang!</h5>
                 </div>

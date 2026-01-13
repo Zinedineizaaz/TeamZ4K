@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 use Xendit\Invoice\CreateInvoiceRequest;
-use GuzzleHttp\Client; // Wajib ditambahkan
+use GuzzleHttp\Client; 
 
 class OrderController extends Controller
 {
@@ -47,11 +47,10 @@ class OrderController extends Controller
 
         $externalId = 'DIMSAY-' . time() . '-' . $user->id;
 
-        // --- SOLUSI BYPASS SSL VIA .ENV ---
+        // BYPASS SSL UNTUK LOKAL
         $verifySsl = env('XENDIT_SSL_VERIFY', true); 
         $customClient = new Client(['verify' => $verifySsl]);
         $apiInstance = new InvoiceApi($customClient);
-        // ----------------------------------
 
         $createInvoice = new CreateInvoiceRequest([
             'external_id' => $externalId,
@@ -75,17 +74,36 @@ class OrderController extends Controller
                     'quantity' => $item->quantity,
                     'product_id' => $item->product_id,
                     'status' => 'PENDING',
-                    'checkout_link' => $response['invoice_url']
+                    'checkout_link' => $response['invoice_url'],
+                    'address' => $request->address, // Simpan alamat dari staging
                 ]);
             }
 
             Cart::where('user_id', $user->id)->delete();
-
             return redirect($response['invoice_url']);
 
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal terhubung ke Xendit: ' . $e->getMessage());
         }
+    }
+
+    public function simulatePaymentSuccess($id)
+    {
+        $order = Order::findOrFail($id);
+        $external_id = $order->order_id_midtrans;
+
+        DB::transaction(function () use ($external_id) {
+            $orders = Order::where('order_id_midtrans', $external_id)->where('status', 'PENDING')->get();
+            foreach ($orders as $o) {
+                $o->update(['status' => 'PAID']);
+                $product = Product::find($o->product_id);
+                if ($product) {
+                    $product->decrement('stock', $o->quantity);
+                }
+            }
+        });
+
+        return back()->with('success', 'Pembayaran Berhasil Diverifikasi (ACC Manual)!');
     }
 
     public function handleWebhook(Request $request)
@@ -100,10 +118,8 @@ class OrderController extends Controller
         if ($status === 'PAID' || $status === 'SETTLEMENT') {
             DB::transaction(function () use ($external_id) {
                 $orders = Order::where('order_id_midtrans', $external_id)->where('status', 'PENDING')->get();
-
                 foreach ($orders as $order) {
                     $order->update(['status' => 'PAID']);
-
                     $product = Product::find($order->product_id);
                     if ($product) {
                         $product->decrement('stock', $order->quantity);
@@ -111,7 +127,18 @@ class OrderController extends Controller
                 }
             });
         }
-
         return response()->json(['status' => 'OK']);
+    }
+
+    public function showInvoice($id)
+    {
+        $order = Order::findOrFail($id);
+        $user = Auth::user();
+
+        if ($order->user_id != $user->id && !in_array($user->role, ['admin', 'police'])) {
+            abort(403);
+        }
+
+        return view('user.invoice', compact('order'));
     }
 }

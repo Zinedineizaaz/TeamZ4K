@@ -70,6 +70,8 @@ protected $routeMiddleware = [
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        
+        // CUSTOM MIDDLEWARE KITA
         'police' => \App\Http\Middleware\IsPolice::class,
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
     ];

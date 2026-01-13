@@ -25,8 +25,23 @@ class LoginController extends Controller
     }
 
     // ================= USER LOGIN =================
-    protected function redirectTo()
+    
+    // Validasi User Biasa + Recaptcha
+    protected function validateLogin(Request $request)
     {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+            'g-recaptcha-response' => 'required|recaptcha', 
+        ]);
+    }
+
+    public function redirectTo()
+    {
+        $role = Auth::user()->role;
+        if (in_array($role, ['admin', 'police', 'superadmin'])) {
+            return '/admin/dashboard';
+        }
         return '/profile';
     }
 
@@ -44,9 +59,11 @@ class LoginController extends Controller
 
     public function loginAdmin(Request $request)
     {
+        // Validasi Admin + Recaptcha
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required|min:6',
+            'g-recaptcha-response' => 'required|recaptcha',
         ]);
 
         if (Auth::guard('admin')->attempt(
@@ -63,10 +80,8 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/');
     }
 }

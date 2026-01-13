@@ -2,50 +2,88 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\Product; // <--- TAMBAHKAN INI
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB; // <--- TAMBAHKAN INI UNTUK TRANSACTION
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Xendit\Configuration;
+use Xendit\Invoice\InvoiceApi;
+use Xendit\Invoice\CreateInvoiceRequest;
 
 class XenditWebhookController extends Controller
 {
-    public function handle(Request $request)
+    public function __construct()
     {
-        $data = $request->all();
-        Log::info('Xendit Webhook Received:', $data);
+        Configuration::setDefaultConfiguration(
+            Configuration::getDefaultConfiguration()
+                ->setApiKey(env('XENDIT_SECRET_KEY'))
+        );
+    }
 
-        $externalId = $data['external_id'];
-        $order = Order::where('order_id_midtrans', $externalId)->first();
+    // FUNGSI BARU: Menampilkan Form Pemesanan
+    public function showOrderForm($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('user.cart', compact('product'));
+    }
 
-        if ($order) {
-            $status = $data['status'];
+    // FUNGSI UPDATE: Checkout dengan Pengurangan Stok
+    public function checkout(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
 
-            // Cek jika status lunas dan belum diproses sebelumnya
-            if (($status === 'PAID' || $status === 'SETTLEMENT') && $order->status !== 'PAID') {
-
-                // Gunakan Database Transaction agar data konsisten
-                DB::transaction(function () use ($order) {
-                    // 1. Update status pesanan jadi PAID
-                    $order->update(['status' => 'PAID']);
-
-                    // 2. LOGIKA KURANGI STOK:
-                    // Cari produk berdasarkan ID yang tersimpan di pesanan
-                    $product = Product::find($order->product_id);
-
-                    if ($product) {
-                        // Kurangi stok sesuai jumlah (quantity) pesanan
-                        $product->decrement('stock', $order->quantity);
-                        Log::info("Stok produk {$product->name} berhasil dikurangi sebanyak {$order->quantity}");
-                    }
-                });
-
-                return response()->json(['message' => 'Status updated and stock decremented'], 200);
-            }
-
-            return response()->json(['message' => 'Order already processed'], 200);
+        // 1. Validasi Stok di TiDB Cloud
+        if ($product->stock < $request->quantity) {
+            return back()->with('error', 'Maaf, stok ' . $product->name . ' tidak mencukupi.');
         }
 
-        return response()->json(['message' => 'Order not found'], 404);
+        $total_harga = $product->price * $request->quantity;
+        $external_id = 'ORD-' . time();
+
+        // 2. Simpan Data Pesanan ke TiDB Cloud
+        $order = Order::create([
+            'external_id' => $external_id,
+            'user_id' => auth()->id(),
+            'amount' => $total_harga,
+            'status' => 'PENDING'
+        ]);
+
+        // 3. LOGIKA BARU: Kurangi Stok Produk
+        $product->decrement('stock', $request->quantity);
+
+        // 4. Buat Invoice Xendit
+        $apiInstance = new InvoiceApi();
+        $createInvoice = new CreateInvoiceRequest([
+            'external_id' => $external_id,
+            'amount' => (double) $total_harga,
+            'payer_email' => auth()->user()->email,
+            'description' => "Pembelian {$request->quantity}x {$product->name}",
+            'success_redirect_url' => route('payment.success'),
+        ]);
+
+        try {
+            $result = $apiInstance->createInvoice($createInvoice);
+            $order->update(['checkout_link' => $result['invoice_url']]);
+
+            return redirect($result['invoice_url']);
+        } catch (\Exception $e) {
+            // Jika gagal, kembalikan stok (Rollback)
+            $product->increment('stock', $request->quantity);
+            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+        }
+    }
+
+    // FUNGSI BARU: Webhook untuk update status otomatis
+    public function handleWebhook(Request $request)
+    {
+        if ($request->header('x-callback-token') !== env('XENDIT_CALLBACK_TOKEN')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $order = Order::where('external_id', $request->external_id)->first();
+        if ($order && $request->status === 'PAID') {
+            $order->update(['status' => 'PAID']);
+        }
+
+        return response()->json(['status' => 'OK']);
     }
 }

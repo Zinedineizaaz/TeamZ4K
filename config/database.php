@@ -49,7 +49,7 @@ return [
             'host' => env('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'),
             'port' => env('DB_PORT', '4000'),
             'database' => env('DB_DATABASE', 'Dimsayku'),
-            'username' => env('DB_USERNAME', '3EY97xZRogLRqWj.root'),
+            'username' => env('DB_USERNAME', 'EY97xZRogLRqWj.root'),
             'password' => env('DB_PASSWORD', '2NLQQjEZqZjPWe9H'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
@@ -59,7 +59,8 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                // base_path() akan otomatis menyesuaikan folder certs di lokal maupun Vercel
+                PDO::MYSQL_ATTR_SSL_CA => base_path('certs/isrgrootx1.pem'),
             ]) : [],
         ],
 

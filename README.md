@@ -1,69 +1,105 @@
 # 🥟 TEAMZ4K – Dimsayku
 
-## 📌 Deskripsi Project
-**TEAMZ4K – Dimsayku** adalah aplikasi manajemen tugas dan operasional UMKM berbasis **Laravel** yang dirancang untuk mendigitalisasi proses bisnis dimsum. Aplikasi ini menyediakan fitur manajemen tugas harian dan data produk menggunakan standar pengembangan perangkat lunak modern seperti konsep **CRUD, Eloquent ORM, Form Validation, Controller, dan Migration.** Project ini dikembangkan sebagai bagian dari tugas mata kuliah **Rekayasa Perangkat Lunak** untuk mendemonstrasikan integrasi CI/CD dan arsitektur perangkat lunak yang baik.
+## 📌 Deskripsi Proyek
+**TEAMZ4K – Dimsayku** adalah aplikasi manajemen tugas dan operasional UMKM berbasis **Laravel** yang dirancang untuk membantu digitalisasi proses bisnis usaha dimsum. Aplikasi ini mendukung pengelolaan tugas harian, data produk, serta alur kerja operasional secara terstruktur dan efisien.
+
+Proyek ini dikembangkan menggunakan standar pengembangan perangkat lunak modern dengan menerapkan konsep **CRUD (Create, Read, Update, Delete)**, **Eloquent ORM**, **Form Validation**, **Controller**, dan **Database Migration**.  
+Pengembangan aplikasi ini merupakan bagian dari tugas mata kuliah **Web Framework & Rekayasa Perangkat Lunak**, dengan fokus pada penerapan **arsitektur perangkat lunak yang baik**, **kolaborasi tim**, serta **implementasi CI/CD dan deployment berbasis cloud**.
 
 ---
 
 ## 👥 Anggota Tim
-| Nama Lengkap | NIM | 
-| :--- | :--- | :--- |
+| Nama Lengkap | NIM |
+| :--- | :--- |
 | **Agus Saputra Hamzah** | 2310120018 |
-| **Khairan Noor Fadhlillah** | 23101200XX | 
-| **Zinedine Izaaz** | 23101200XX | 
+| **Khairan Noor Fadhlillah** | 23101200XX |
+| **Zinedine Izaaz** | 23101200XX |
 
 ---
 
-## 🚀 Fitur Framework Laravel
-Aplikasi ini telah mengimplementasikan fitur-fitur inti Laravel berikut:
+## 🚀 Fitur & Implementasi Laravel
+Aplikasi ini mengimplementasikan fitur inti Laravel sebagai berikut:
 
-* **Arsitektur Dasar:** Route, View, Controller.
-* **Templating:** Blade Template (Short command & layout design).
-* **Frontend:** Bootstrap / TailwindCSS Framework.
-* **Database:** Migration, Eloquent ORM, Collection.
-* **Logic:** Form Processing & Form Validation, CRUD (Create-Read-Update-Delete).
-* **Security & Middleware:** Middleware, Authentication, Policy, Session.
-* **Advanced:** File Upload (Integration with Cloudinary).
+- **Arsitektur Dasar:** Routing, View, dan Controller  
+- **Templating Engine:** Blade Template (layouting & reusable components)  
+- **Frontend:** Bootstrap / Tailwind CSS  
+- **Database Management:** Migration, Eloquent ORM, Collection  
+- **Business Logic:** Form Processing, Form Validation, CRUD  
+- **Security & Middleware:** Authentication, Middleware, Policy, Session  
+- **Advanced Feature:** File Upload (integrasi dengan Cloudinary)
 
 ---
 
-🏗️ Dokumentasi CI/CD & Deployment (Latihan Week 12)
-1. Arsitektur CI/CD Pipeline
-Kami menggunakan GitHub Actions sebagai orkestrator CI/CD. Alur kerja dimulai dari Local Development, dilanjutkan dengan Push ke Feature Branch, kemudian divalidasi melalui Pull Request otomatis sebelum akhirnya di-merge ke branch utama.
+## 🏗️ Dokumentasi CI/CD & Deployment  
+*(Latihan Week 12)*
 
-2. Penjelasan Workflow GitHub Actions
-Sesuai dengan konfigurasi pada folder .github/workflows/:
-- Trigger: Pipeline otomatis berjalan saat ada Pull Request ke branch main atau staging.
-- Runner: Menggunakan environment ubuntu-latest. 
-- Steps Utama:
-1. Checkout Code: Mengambil source code terbaru.
-2. Setup PHP & Dependencies: Menginstal PHP 8.2 dan Composer.
-3. Environment Preparation: Menyalin .env.example dan generate APP_KEY.
-4. Automated Testing: Menjalankan php artisan test (SQLite :memory:) untuk memverifikasi fungsi CRUD dan validasi tetap berjalan normal sebelum di-merge.
+### 1. Arsitektur CI/CD Pipeline
+Pipeline CI/CD dibangun menggunakan **GitHub Actions** sebagai orkestrator. Alur kerja dimulai dari pengembangan lokal, dilanjutkan dengan push ke feature branch, kemudian divalidasi melalui **Pull Request** sebelum di-merge ke branch utama.
 
-3. Branching Strategy
-Tim kami menerapkan strategi kolaborasi berbasis branch:
-- main: Kode produksi yang stabil dan sudah melalui review (Production).
-- staging: Branch integrasi untuk pengujian tim sebelum rilis ke production.
-- feature/update-title: Contoh branch fitur untuk perubahan spesifik (Latihan Week 12).
-- fix-total: Branch khusus untuk konsolidasi fitur dan perbaikan bug besar.
+---
 
-4. Cara Kerja Deployment Staging & Production
-Deployment dilakukan menggunakan platform Vercel dengan Serverless Runtime:
-- Staging: Terhubung otomatis ke branch staging. Setiap perubahan akan di-deploy ke URL staging untuk tahap Quality Assurance (QA).
-- Production: Terhubung ke branch main. Deployment hanya dilakukan jika kode sudah stabil dan Pull Request disetujui oleh Ketua Tim.
+### 2. Workflow GitHub Actions
+Konfigurasi workflow berada pada folder `.github/workflows/` dengan detail sebagai berikut:
 
-5. Mekanisme Rollback
-Untuk menjaga stabilitas aplikasi, kami menyiapkan dua skema pembatalan:
-- Vercel Rollback: Menggunakan fitur Instant Rollback pada dashboard Vercel untuk mengembalikan status aplikasi ke versi deployment sebelumnya yang sukses.
-- Git Revert/Reset: Menggunakan perintah git revert <commit_hash> untuk membatalkan commit bermasalah di repository, yang kemudian akan memicu redeploy otomatis versi yang diperbaiki.
+- **Trigger:**  
+  Pipeline berjalan otomatis saat terdapat Pull Request ke branch `main` atau `staging`.
 
-🌐 Staging URL (Vercel) : https://dimsaykuu-git-staging-zinedineizaazs-projects.vercel.app/
-🚀 Production URL (Vercel) : https://dimsaykuu.vercel.app/
+- **Runner:**  
+  Menggunakan environment `ubuntu-latest`.
 
-▶️ YouTube Link
+- **Langkah Utama:**
+  1. **Checkout Code** – Mengambil source code terbaru dari repository  
+  2. **Setup PHP & Dependencies** – Instalasi PHP 8.2 dan Composer  
+  3. **Environment Preparation** – Menyalin `.env.example` dan generate `APP_KEY`  
+  4. **Automated Testing** – Menjalankan `php artisan test` menggunakan SQLite `:memory:` untuk memastikan fitur CRUD dan validasi berjalan dengan baik sebelum merge
 
-📺 Video Demo / Dokumentasi : https://youtu.be/PIzHsRK0GaA?si=E_dmeoGA8DzcaE9u
+---
+
+### 3. Branching Strategy
+Tim menerapkan strategi branching kolaboratif sebagai berikut:
+
+- `main` → Branch produksi yang stabil dan telah melalui proses review  
+- `staging` → Branch integrasi untuk pengujian internal tim sebelum rilis  
+- `feature/update-title` → Contoh branch fitur untuk perubahan spesifik (Latihan Week 12)  
+- `fix-total` → Branch untuk perbaikan bug dan konsolidasi fitur utama  
+
+---
+
+### 4. Deployment Staging & Production
+Deployment aplikasi dilakukan menggunakan **Vercel** dengan serverless runtime:
+
+- **Staging Environment**  
+  Terhubung langsung dengan branch `staging`. Setiap perubahan akan otomatis dideploy ke URL staging untuk proses Quality Assurance (QA).
+
+- **Production Environment**  
+  Terhubung dengan branch `main`. Deployment hanya dilakukan setelah kode dinyatakan stabil dan Pull Request disetujui oleh Ketua Tim.
+
+---
+
+### 5. Mekanisme Rollback
+Untuk menjaga stabilitas aplikasi, disiapkan dua mekanisme rollback:
+
+- **Vercel Rollback**  
+  Menggunakan fitur *Instant Rollback* pada dashboard Vercel untuk mengembalikan aplikasi ke versi deployment terakhir yang sukses.
+
+- **Git Revert / Reset**  
+  Menggunakan perintah `git revert <commit_hash>` untuk membatalkan commit bermasalah, yang kemudian akan memicu redeploy otomatis.
+
+---
+
+## 🌐 Akses Aplikasi
+- 🧪 **Staging URL (Vercel)**  
+  https://dimsaykuu-git-staging-zinedineizaazs-projects.vercel.app/
+
+- 🚀 **Production URL (Vercel)**  
+  https://dimsaykuu.vercel.app/
+
+---
+
+## ▶️ Video Demo
+📺 **YouTube – Demo & Dokumentasi Aplikasi**  
+https://youtu.be/PIzHsRK0GaA?si=E_dmeoGA8DzcaE9u
+
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 

@@ -37,11 +37,19 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        {{-- Logika Gambar: Mendukung lokal & Vercel --}}
-                                                        <img src="{{ asset('products/' . $item->product->image) }}"
+                                                        {{-- LOGIKA GAMBAR CERDAS: MENDUKUNG CLOUDINARY & LOKAL --}}
+                                                        @php
+                                                            $imgUrl = $item->product->image;
+                                                            // Jika bukan URL lengkap (Cloudinary), maka cari di folder lokal
+                                                            if (!Str::startsWith($imgUrl, ['http://', 'https://'])) {
+                                                                $imgUrl = asset('storage/products/' . $item->product->image);
+                                                            }
+                                                        @endphp
+
+                                                        <img src="{{ $imgUrl }}"
                                                             alt="{{ $item->product->name }}" class="rounded-3 me-3"
                                                             style="width: 70px; height: 70px; object-fit: cover;"
-                                                            onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+                                                            onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Dimsum';">
 
                                                         <div>
                                                             <h6 class="mb-0 fw-bold">{{ $item->product->name }}</h6>
@@ -86,15 +94,14 @@
                             <div class="text-center py-5">
                                 <i class="bi bi-cart-x display-1 text-muted" style="opacity: 0.3;"></i>
                                 <p class="mt-3 lead">Wah, keranjangmu masih kosong!</p>
-                                <a href="{{ route('menu') }}" class="btn btn-danger rounded-pill px-5 py-2 shadow">Mulai
-                                    Belanja</a>
+                                <a href="{{ route('menu') }}" class="btn btn-danger rounded-pill px-5 py-2 shadow">Mulai Belanja</a>
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
 
-            {{-- RINGKASAN PEMBAYARAN & FORM CHECKOUT --}}
+            {{-- RINGKASAN PEMBAYARAN --}}
             <div class="col-md-4">
                 <div class="card shadow-sm border-0 sticky-top rounded-4" style="top: 100px;">
                     <div class="card-header bg-white py-3 border-0">
@@ -112,14 +119,13 @@
                         <hr class="border-dashed">
 
                         @if($cartItems->count() > 0)
-                            {{-- Form Checkout Mengarah ke Controller Xendit --}}
                             <form action="{{ route('checkout') }}" method="POST">
                                 @csrf
                                 <div class="mb-4">
                                     <label for="address" class="form-label fw-bold">Alamat Pengiriman</label>
                                     <textarea name="address" id="address"
                                         class="form-control border-danger-subtle @error('address') is-invalid @enderror"
-                                        rows="3" placeholder="Contoh: Jl. Dimsum No. 1, RT 01/02, Jakarta Selatan..." required
+                                        rows="3" placeholder="Masukkan alamat lengkap..." required
                                         style="border-radius: 12px;">{{ old('address') }}</textarea>
                                     @error('address')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -128,38 +134,21 @@
 
                                 <div class="d-flex justify-content-between mb-4">
                                     <span class="fs-5 fw-bold text-dark">Total Tagihan</span>
-                                    <span class="fs-4 fw-bold text-danger">Rp
-                                        {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                                    <span class="fs-4 fw-bold text-danger">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                                 </div>
 
                                 <input type="hidden" name="total_price" value="{{ $totalPrice }}">
 
-                                {{-- Tombol Bayar Sekarang --}}
-                                <button type="submit"
-                                    class="btn btn-danger w-100 py-3 rounded-pill fw-bold mb-3 shadow-lg border-0">
+                                <button type="submit" class="btn btn-danger w-100 py-3 rounded-pill fw-bold mb-3 shadow-lg border-0">
                                     <i class="bi bi-wallet2 me-2"></i> Bayar Sekarang
                                 </button>
                             </form>
-                        @else
-                            <div class="d-flex justify-content-between mb-4">
-                                <span class="fs-5 fw-bold text-muted">Total Tagihan</span>
-                                <span class="fs-5 fw-bold text-muted">Rp 0</span>
-                            </div>
-                            <button class="btn btn-secondary w-100 py-3 rounded-pill fw-bold disabled border-0">
-                                Checkout
-                            </button>
                         @endif
 
-                        <div class="text-center">
+                        <div class="text-center mt-3">
                             <p class="small text-muted mb-0">
                                 <i class="bi bi-shield-check me-1"></i> Pembayaran Aman Via <strong>Xendit</strong>
                             </p>
-                            <div class="mt-2 opacity-50">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/QRIS_logo.svg" height="20"
-                                    class="me-2" alt="QRIS">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Logo_OVO.png" height="15"
-                                    alt="OVO">
-                            </div>
                         </div>
                     </div>
                 </div>

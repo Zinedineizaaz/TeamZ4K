@@ -12,8 +12,8 @@ Pengembangan aplikasi ini merupakan bagian dari tugas mata kuliah **Web Framewor
 | Nama Lengkap | NIM |
 | :--- | :--- |
 | **Agus Saputra Hamzah** | 2310120018 |
-| **Khairan Noor Fadhlillah** | 23101200XX |
-| **Zinedine Izaaz** | 23101200XX |
+| **Khairan Noor Fadhlillah** | 2310120022 |
+| **Zinedine Izaaz** | 2310120014 |
 
 ---
 

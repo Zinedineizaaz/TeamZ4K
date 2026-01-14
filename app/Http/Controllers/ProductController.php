@@ -46,7 +46,7 @@ class ProductController extends Controller
         $validated['is_promo'] = $request->has('is_promo');
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan ke Cloudinary!');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function edit(Product $product)
@@ -85,7 +85,7 @@ class ProductController extends Controller
         $validated['is_promo'] = $request->has('is_promo');
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui di Cloud!');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
     public function destroy(Product $product)
@@ -98,6 +98,6 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk dan gambar Cloudinary berhasil dihapus!');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
     }
 }

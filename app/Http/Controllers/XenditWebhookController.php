@@ -15,7 +15,7 @@ class XenditWebhookController extends Controller
     {
         Configuration::setDefaultConfiguration(
             Configuration::getDefaultConfiguration()
-                ->setApiKey(env('XENDIT_API_KEY'))
+                ->setApiKey(env('XENDIT_SECRET_KEY'))
         );
     }
 

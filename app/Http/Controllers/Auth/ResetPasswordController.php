@@ -7,23 +7,15 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class ResetPasswordController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Password Reset Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling password reset requests
-    | and uses a simple trait to include this behavior. You're free to
-    | explore this trait and override any methods you wish to tweak.
-    |
-    */
-
     use ResetsPasswords;
 
-    /**
-     * Where to redirect users after resetting their password.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    // --- LOGIKA UTAMA: REDIRECT KE PROFIL SETELAH SUKSES ---
+    // Setelah password diganti, user otomatis login, jadi kita lempar ke Profile.
+    protected $redirectTo = '/profile';
+
+    public function __construct()
+    {
+        // Pastikan tamu yang bisa akses, kecuali logout
+        $this->middleware('guest');
+    }
 }

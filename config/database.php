@@ -48,9 +48,9 @@ return [
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'),
             'port' => env('DB_PORT', '4000'),
-            'database' => env('DB_DATABASE', 'wf20251_Dimsayku'),
-            'username' => env('DB_USERNAME', '3EY97xZRogLRqWj.root'),
-            'password' => env('DB_PASSWORD', ''),
+            'database' => env('DB_DATABASE', 'Dimsayku'),
+            'username' => env('DB_USERNAME', 'EY97xZRogLRqWj.root'),
+            'password' => env('DB_PASSWORD', '2NLQQjEZqZjPWe9H'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -58,13 +58,10 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => [
-                PDO::MYSQL_ATTR_SSL_CA => base_path('certs/isrgrootx1.pem'),
-                // Mematikan verifikasi file fisik agar tidak error di Vercel
-                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-                // Memberitahu MySQL untuk tetap menggunakan enkripsi (Wajib untuk TiDB)
-                1014 => true,
-            ],
+          'options' => array_filter([
+        // GUNAKAN INI: Otomatis cari path root project/certs/isrgrootx1.pem
+        PDO::MYSQL_ATTR_SSL_CA => base_path('certs/isrgrootx1.pem'),
+    ]),
         ],
         'pgsql' => [
             'driver' => 'pgsql',

@@ -4,25 +4,23 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class IsPolice
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // 1. Cek apakah user sedang login DAN apakah rolenya superadmin
-        if (auth()->check() && auth()->user()->role === 'superadmin') {
-            
-            // Kalau IYA (Police), silakan lanjut masuk
-            return $next($request);
+        if (Auth::check()) {
+            $role = Auth::user()->role;
+
+            // HANYA BOLEHIN POLICE & SUPERADMIN
+            // Staff (admin) tidak ada di sini, jadi bakal ditolak
+            if ($role === 'police' || $role === 'superadmin') {
+                return $next($request);
+            }
         }
 
-        // --- UBAH BAGIAN INI ---
-        // Jangan redirect ke '/', tapi stop proses dan tampilkan Error 403.
-        // Laravel otomatis akan mencari file view di resources/views/errors/403.blade.php
-        abort(403, 'Akses Ditolak! Halaman ini hanya untuk Police.');
+        // Tendang Staff atau User biasa
+        abort(403, 'DILARANG MASUK! Area ini khusus Police & Superadmin.');
     }
 }

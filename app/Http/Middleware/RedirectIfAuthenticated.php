@@ -20,8 +20,21 @@ class RedirectIfAuthenticated
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
+            // Cek apakah user sudah login?
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                
+                $user = Auth::user();
+
+                // PERBAIKAN: Logika Redirect berdasarkan ROLE
+                
+                // 1. Jika Role Admin atau Police -> Lempar ke Dashboard Admin
+                if ($user->role == 'admin' || $user->role == 'police') {
+                    return redirect()->route('admin.dashboard');
+                }
+
+                // 2. Jika Role User Biasa -> Lempar ke Home
+                // Jadi user gak akan bisa lihat halaman login admin lagi
+                return redirect()->route('profile');
             }
         }
 

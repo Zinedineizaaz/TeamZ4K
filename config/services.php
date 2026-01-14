@@ -31,4 +31,22 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),         // Panggil nama kuncinya
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // Panggil nama kuncinya
+        'redirect' => env('GOOGLE_REDIRECT_URL'),       // Panggil nama kuncinya
+    ],
+
+    'xendit' => [
+        // GANTI baris ini:
+        // 'secret_key' => env('XENDIT_SECRET_KEY'),
+        
+        // MENJADI ini (sesuai nama di .env kamu):
+        'secret_key' => env('XENDIT_API_KEY'), 
+        
+        'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
+    ],
+
 ];
+
+    

@@ -47,7 +47,7 @@ Route::get('/menu', [PageController::class, 'menu'])->name('menu');
 Route::get('/event-kuliner', [EventController::class, 'index'])->name('events.index');
 
 // Rute Xendit Callback (Di luar auth middleware)
-Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
+// Route::post('/xendit/callback', [XenditWebhookController::class, 'handleCallback']);
 
 // =====================
 // 2. KHUSUS LOGIN ADMIN

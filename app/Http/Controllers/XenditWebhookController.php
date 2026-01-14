@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
@@ -13,77 +12,53 @@ class XenditWebhookController extends Controller
 {
     public function __construct()
     {
+        // INISIALISASI API KEY YANG AMAN UNTUK VERCEL
         Configuration::setDefaultConfiguration(
             Configuration::getDefaultConfiguration()
-                ->setApiKey(env('XENDIT_SECRET_KEY'))
+                ->setApiKey(config('services.xendit.secret_key'))
         );
     }
 
-    // FUNGSI BARU: Menampilkan Form Pemesanan
-    public function showOrderForm($id)
-    {
-        $product = Product::findOrFail($id);
-        return view('user.cart', compact('product'));
-    }
-
-    // FUNGSI UPDATE: Checkout dengan Pengurangan Stok
+    // FUNGSI CHECKOUT (Dipanggil saat user klik "Bayar Sekarang")
     public function checkout(Request $request)
     {
-        $product = Product::findOrFail($request->product_id);
-
-        // 1. Validasi Stok di TiDB Cloud
-        if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Maaf, stok ' . $product->name . ' tidak mencukupi.');
-        }
-
-        $total_harga = $product->price * $request->quantity;
+        // ... (Validasi input, dll) ...
+        
         $external_id = 'ORD-' . time();
+        $user = auth()->user();
 
-        // 2. Simpan Data Pesanan ke TiDB Cloud
+        // 1. Buat Order di Database (Status PENDING)
         $order = Order::create([
             'external_id' => $external_id,
-            'user_id' => auth()->id(),
-            'amount' => $total_harga,
-            'status' => 'PENDING'
+            'user_id' => $user->id,
+            'amount' => $request->total_price,
+            'status' => 'PENDING',
+            'description' => $request->address,
+            // Simpan product_id & quantity jika ingin pengurangan stok otomatis di callback nanti
+            'product_id' => $request->product_id ?? null, 
+            'quantity' => $request->quantity ?? 1
         ]);
 
-        // 3. LOGIKA BARU: Kurangi Stok Produk
-        $product->decrement('stock', $request->quantity);
-
-        // 4. Buat Invoice Xendit
+        // 2. Buat Invoice ke Xendit
         $apiInstance = new InvoiceApi();
         $createInvoice = new CreateInvoiceRequest([
             'external_id' => $external_id,
-            'amount' => (double) $total_harga,
-            'payer_email' => auth()->user()->email,
-            'description' => "Pembelian {$request->quantity}x {$product->name}",
+            'amount' => (double) $request->total_price,
+            'payer_email' => $user->email,
+            'description' => "Pembayaran Order #{$external_id}",
             'success_redirect_url' => route('payment.success'),
+            'failure_redirect_url' => route('cart.index'),
         ]);
 
         try {
             $result = $apiInstance->createInvoice($createInvoice);
             $order->update(['checkout_link' => $result['invoice_url']]);
-
+            
             return redirect($result['invoice_url']);
+
         } catch (\Exception $e) {
-            // Jika gagal, kembalikan stok (Rollback)
-            $product->increment('stock', $request->quantity);
-            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+            $order->delete();
+            return back()->with('error', 'Gagal membuat pembayaran: ' . $e->getMessage());
         }
-    }
-
-    // FUNGSI BARU: Webhook untuk update status otomatis
-    public function handleWebhook(Request $request)
-    {
-        if ($request->header('x-callback-token') !== env('XENDIT_CALLBACK_TOKEN')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $order = Order::where('external_id', $request->external_id)->first();
-        if ($order && $request->status === 'PAID') {
-            $order->update(['status' => 'PAID']);
-        }
-
-        return response()->json(['status' => 'OK']);
     }
 }

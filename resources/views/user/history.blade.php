@@ -45,37 +45,24 @@
                                     </td>
                                     <td class="text-danger fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
                                     <td>
-                                        @php
-                                            $status = strtoupper($order->status);
-                                        @endphp
+                                        @php $status = strtoupper($order->status); @endphp
                                         @if($status == 'PENDING')
-                                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Menunggu Pembayaran</span>
+                                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Menunggu</span>
                                         @elseif(in_array($status, ['PAID', 'SETTLEMENT', 'SUCCESS']))
-                                            <span class="badge bg-success px-3 py-2 rounded-pill">Berhasil</span>
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">Lunas</span>
                                         @else
                                             <span class="badge bg-secondary px-3 py-2 rounded-pill">{{ $status }}</span>
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-1">
-                                            {{-- 1. TOMBOL DETAIL (BAWAAN) --}}
-                                            <a href="{{ route('payment', $order->id) }}" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm" title="Lihat Detail / Bayar">
-                                                <i class="bi bi-eye"></i> Detail
-                                            </a>
-
-                                            {{-- 2. TOMBOL MAGIC (SIMULASI BAYAR) --}}
-                                            {{-- Cuma muncul kalau status masih PENDING --}}
-                                            @if($status == 'PENDING')
-                                            <form action="{{ route('payment.simulate', $order->id) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm" 
-                                                        onclick="return confirm('Yakin mau ACC pesanan ini secara manual (Mode Test)?')"
-                                                        title="Simulasi Bayar Sukses">
-                                                    <i class="bi bi-check-circle"></i> ACC (Test)
-                                                </button>
-                                            </form>
-                                            @endif
-                                        </div>
+                                        {{-- TOMBOL LIHAT INVOICE (PENGGANTI DETAIL & ACC) --}}
+                                       <td class="text-center">
+    {{-- TOMBOL LIHAT INVOICE (GANTI DENGAN ROUTE BARU) --}}
+    <a href="{{ route('order.invoice', $order->id) }}" target="_blank" 
+       class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+        <i class="bi bi-receipt-cutoff me-1"></i> Lihat Invoice
+    </a>
+</td>
                                     </td>
                                 </tr>
                                 @empty

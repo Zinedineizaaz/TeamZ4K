@@ -13,73 +13,103 @@ class LoginController extends Controller
 
     public function __construct()
     {
+        // Middleware Guest: Yang udah login gak boleh buka halaman login lagi
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
 
-    /**
-     * TAMBAHAN 1: OVERRIDE VALIDASI USER BIASA
-     * Ini nambahin Recaptcha buat form login user biasa.
-     */
+    // ==========================================
+    // 1. LOGIN USER BIASA (Masyarakat)
+    // ==========================================
+
+    // Validasi input user biasa
     protected function validateLogin(Request $request)
     {
         $request->validate([
             $this->username() => 'required|string',
             'password' => 'required|string',
-            // Pastikan rule 'recaptcha' sesuai dengan library yang lu pake (misal: 'recaptcha', 'captcha', atau 'google_recaptcha')
-            'g-recaptcha-response' => 'required|recaptcha', 
+            'g-recaptcha-response' => 'required|recaptcha', // Validasi Recaptcha
         ]);
     }
 
-    // --- LOGIKA 1: REDIRECT SESUAI ROLE ---
+    // Kalau User Biasa sukses login, lempar kesini
     public function redirectTo()
     {
-        $role = Auth::user()->role; 
-        
-        // UPDATE: Tambahin 'police' disini
-        if ($role == 'superadmin' || $role == 'admin' || $role == 'police') {
+        $role = Auth::user()->role;
+
+        // Jaga-jaga kalau Admin iseng login lewat form user biasa
+        if (in_array($role, ['admin', 'police', 'superadmin'])) {
             return '/admin/dashboard';
         }
 
-        // Kalau User biasa -> Ke Home
-        return '/profile'; 
+        return '/profile';
     }
 
-    // --- LOGIKA 2: CATAT WAKTU LOGIN ---
+    // Update waktu login terakhir
     protected function authenticated(Request $request, $user)
     {
         $user->last_login_at = now();
         $user->save();
     }
 
-    // =========================================================
-    //       FITUR KHUSUS: LOGIN ADMIN (/admin/login)
-    // =========================================================
+    // ==========================================
+    // 2. LOGIN ADMIN (Staff, Police, Superadmin)
+    // ==========================================
 
+    // Tampilkan Form Login Admin
     public function showAdminLoginForm()
     {
         return view('auth.admin_login');
     }
 
+    // Proses Login Admin
     public function loginAdmin(Request $request)
     {
-        // 1. Validasi Input Standar + RECAPTCHA
-        $this->validate($request, [
-            'email'    => 'required|email',
+        // A. VALIDASI INPUT
+        $request->validate([
+            'email' => 'required|email',
             'password' => 'required|min:6',
-            // TAMBAHAN 2: Validasi Recaptcha Admin
             'g-recaptcha-response' => 'required|recaptcha',
         ]);
 
-        // 2. Coba Login
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            
-            // --- HAPUS PENGECEKAN ROLE DISINI ---
-            // Pokoknya kalau email pas, langsung lempar ke dashboard
-            return redirect()->route('admin.dashboard');
+        // B. COBA LOGIN (Pakai Guard Standar 'web')
+        // attempt() otomatis ngecek Email & Hash Password di database
+        if (
+            Auth::guard('web')->attempt(
+                ['email' => $request->email, 'password' => $request->password],
+                $request->remember
+            )
+        ) {
+            // C. LOGIN BERHASIL -> SEKARANG CEK JABATANNYA (ROLE)
+            $user = Auth::user();
+
+            // Cek apakah dia punya hak akses admin?
+            if (in_array($user->role, ['admin', 'police', 'superadmin'])) {
+
+                // Catat waktu login
+                $user->last_login_at = now();
+                $user->save();
+
+                // SILAKAN MASUK BOS!
+                return redirect()->route('admin.dashboard');
+            }
+
+            // D. KALAU LOGIN SUKSES TAPI ROLE-NYA 'USER' (PENYUSUP)
+            Auth::guard('web')->logout(); // Tendang keluar (Logout paksa)
+            return back()->with('error', 'Maaf, akun Anda bukan akun Admin/Police.');
         }
 
-        // Kalau password salah
-        return back()->withInput($request->only('email', 'remember'))->with('error', 'Email atau Password salah!');
+        // E. KALAU PASSWORD ATAU EMAIL SALAH
+        return back()->with('error', 'Email atau Password salah!');
+    }
+
+    // ==========================================
+    // 3. LOGOUT (Umum)
+    // ==========================================
+    public function logout(Request $request)
+    {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }

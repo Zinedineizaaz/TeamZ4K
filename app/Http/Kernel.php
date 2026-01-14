@@ -23,12 +23,6 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
-protected $routeMiddleware = [
-        // ... yang lain ...
-        'is_admin' => \App\Http\Middleware\IsAdmin::class, // Satpam Pintu Utama
-        'police'   => \App\Http\Middleware\IsPolice::class, // Satpam Ruang Rahasia (TAMBAHIN INI)
-    ];
-
     /**
      * The application's route middleware groups.
      *
@@ -70,7 +64,9 @@ protected $routeMiddleware = [
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'police' => \App\Http\Middleware\IsPolice::class,
-        'is_admin' => \App\Http\Middleware\IsAdmin::class,
+        
+        // === CUSTOM MIDDLEWARE KITA (INI YANG PENTING) ===
+        'police'   => \App\Http\Middleware\IsPolice::class, // Satpam Ruang Rahasia
+        'is_admin' => \App\Http\Middleware\IsAdmin::class,  // Satpam Pintu Utama
     ];
 }

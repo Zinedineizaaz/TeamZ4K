@@ -2,8 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\XenditWebhookController;
-use App\Http\Controllers\PaymentCallbackController;
+use App\Http\Controllers\PaymentCallbackController; // Panggil Controller Pilihanmu
 
 /*
 |--------------------------------------------------------------------------
@@ -11,11 +10,10 @@ use App\Http\Controllers\PaymentCallbackController;
 |--------------------------------------------------------------------------
 */
 
-// Route untuk Webhook Xendit (Tanpa Auth Sanctum karena diakses oleh server Xendit)
-Route::post('/xendit/callback', [XenditWebhookController::class, 'handle'])->name('xendit.webhook');
-Route::post('payment/callback', [PaymentCallbackController::class, 'handleCallback']);
+// URL Webhook untuk Dashboard Xendit: 
+// https://dimsaykuu.vercel.app/api/payment/callback
+Route::post('payment/callback', [PaymentCallbackController::class, 'handleCallback'])->name('api.payment.callback');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-
 });

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Dimsaykuu | @yield('title', 'UMKM F&B')</title>
-
+<link rel="icon" href="{{ asset('images/logoku.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('images/logoku.png') }}" type="image/x-icon">
     {{-- Custom CSS --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
@@ -123,17 +124,17 @@
                         {{-- ========== AUTH USER ========== --}}
                         @auth
                            {{-- Ikon Favorit --}}
-<li class="nav-item me-3">
-    <a class="nav-link text-white position-relative" href="{{ route('favorites.index') }}" title="Favorit Saya">
-        <i class="bi bi-heart-fill fs-5"></i>
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white position-relative" href="{{ route('favorites.index') }}" title="Favorit Saya">
+                                    <i class="bi bi-heart-fill fs-5"></i>
 
-        @if(Auth::user()->favorites()->count() > 0)
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
-                {{ Auth::user()->favorites()->count() }}
-            </span>
-        @endif
-    </a>
-</li>
+                                    @if(Auth::user()->favorites()->count() > 0)
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
+                                            {{ Auth::user()->favorites()->count() }}
+                                        </span>
+                                    @endif
+                                </a>
+                            </li>
 
 
                             {{-- Ikon Keranjang (Cart) --}}
@@ -158,10 +159,10 @@
                                     <img src="{{ Auth::user()->avatar
                                             ? asset('storage/' . Auth::user()->avatar)
                                             : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=ffc107&color=000' }}"
-                                         class="rounded-circle me-2 border border-white"
-                                         width="32"
-                                         height="32"
-                                         style="object-fit: cover;">
+                                     class="rounded-circle me-2 border border-white"
+                                     width="32"
+                                     height="32"
+                                     style="object-fit: cover;">
 
                                     {{-- Nama User --}}
                                     <span class="fw-bold small">{{ explode(' ', Auth::user()->name)[0] }}</span>
@@ -176,7 +177,8 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     
-                                    @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
+                                    {{-- MENU UNTUK ADMIN --}}
+                                    @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin' || Auth::user()->role == 'police')
                                         <li>
                                             <a class="dropdown-item fw-bold text-danger" href="{{ url('/admin/dashboard') }}">
                                                 <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
@@ -190,11 +192,15 @@
                                         </a>
                                     </li>
 
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('profile.history') }}">
-                                            <i class="bi bi-clock-history me-2 text-danger"></i>Riwayat Pesanan
-                                        </a>
-                                    </li>
+                                    {{-- MENU UNTUK USER BIASA (INI PERBAIKANNYA) --}}
+                                    {{-- Hanya tampil kalau rolenya 'user' --}}
+                                    @if(Auth::user()->role == 'user')
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('profile.history') }}">
+                                                <i class="bi bi-clock-history me-2 text-danger"></i>Riwayat Pesanan
+                                            </a>
+                                        </li>
+                                    @endif
 
                                     <li><hr class="dropdown-divider"></li>
                                     <li>

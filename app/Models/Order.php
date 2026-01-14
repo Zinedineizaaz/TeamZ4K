@@ -15,7 +15,8 @@ class Order extends Model
     'price', 
     'status', 
     'order_id_midtrans', 
-    'snap_token'
+    'snap_token',
+    'address',
 ];
 
     public function user()

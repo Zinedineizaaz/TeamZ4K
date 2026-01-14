@@ -68,55 +68,89 @@
 
                 {{-- Sisipkan bagian ini setelah penutup Row Statistik Finansial dan sebelum Grafik Analitik --}}
 
-<h4 class="fw-bold mb-3 text-dark mt-4"><i class="bi bi-cart-check me-2"></i>Riwayat Pembelian Terbaru</h4>
-<a href="{{ route('admin.orders.export') }}" class="btn btn-success">
-        <i class="fas fa-file-excel"></i> Export ke Excel (CSV)
-    </a>
-<div class="card border-0 shadow-sm mb-5">
+<<h4 class="fw-bold mb-3 text-dark mt-4"><i class="bi bi-cart-check me-2"></i>Riwayat Pembelian Terbaru</h4>
+
+<a href="{{ route('admin.orders.export') }}" class="btn btn-success mb-3 shadow-sm rounded-pill">
+    <i class="bi bi-file-earmark-excel me-2"></i>Export ke CSV
+</a>
+
+<div class="card border-0 shadow-sm mb-5 rounded-4 overflow-hidden">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead class="bg-light text-secondary small text-uppercase">
                     <tr>
-                        <th class="ps-4">ID Pesanan</th>
-                        <th>Pelanggan</th>
-                        <th>Produk</th>
-                        <th>Total Bayar</th>
-                        <th>Status</th>
-                        <th class="pe-4">Waktu</th>
-                    </tr>
+                        <th class="ps-4 py-3">ID Pesanan</th>
+                        <th class="py-3">Pelanggan</th>
+                        <th class="py-3">Alamat Pengiriman</th> <th class="py-3">Produk</th>
+                        <th class="py-3">Total</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-center">Aksi</th> </tr>
                 </thead>
                 <tbody>
                     @forelse($recent_orders as $order)
                     <tr>
-                        <td class="ps-4 small text-muted">#{{ $order->order_id_midtrans }}</td>
+                        <td class="ps-4 small text-muted font-monospace">#{{ substr($order->order_id_midtrans, -8) }}</td>
                         <td>
-                            <div class="fw-bold">{{ $order->user->name ?? 'User Terhapus' }}</div>
+                            <div class="fw-bold text-dark">{{ $order->user->name ?? 'User Terhapus' }}</div>
                             <small class="text-muted">{{ $order->user->email ?? '-' }}</small>
                         </td>
-                        <td>{{ Str::limit($order->product_name, 30) }}</td>
+                        
+                        {{-- MENAMPILKAN ALAMAT --}}
+                        <td style="max-width: 200px;">
+                            <span class="d-inline-block text-truncate small text-secondary" style="max-width: 100%;">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                                {{ $order->address ?? 'Alamat tidak diisi' }}
+                            </span>
+                        </td>
+
+                        <td>{{ Str::limit($order->product_name, 25) }}</td>
                         <td class="fw-bold text-danger">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
+                        
                         <td>
-                            @if(in_array($order->status, ['PAID', 'SETTLEMENT', 'SUCCESS']))
-                                <span class="badge bg-success rounded-pill px-3">LUNAS</span>
-                            @elseif($order->status == 'PENDING')
-                                <span class="badge bg-warning text-dark rounded-pill px-3">MENUNGGU</span>
+                            @if(in_array(strtoupper($order->status), ['PAID', 'SETTLEMENT', 'SUCCESS']))
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 border border-success">LUNAS</span>
+                            @elseif(strtoupper($order->status) == 'PENDING')
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 border border-warning">PENDING</span>
                             @else
                                 <span class="badge bg-secondary rounded-pill px-3">{{ $order->status }}</span>
                             @endif
                         </td>
-                        <td class="pe-4 small">{{ $order->created_at->diffForHumans() }}</td>
+
+                        {{-- TOMBOL AKSI ADMIN (ACC/TOLAK) --}}
+                        <td class="text-center">
+                            @if(strtoupper($order->status) == 'PENDING')
+                                <div class="d-flex justify-content-center gap-1">
+                                    {{-- Tombol Terima (ACC) --}}
+                                    {{-- Pastikan route ini ada atau arahkan ke logic update status --}}
+                                    <form action="{{ route('payment.simulate', $order->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success rounded-circle shadow-sm" 
+                                                title="ACC Manual (Terima)" onclick="return confirm('ACC Pesanan ini secara manual?')">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </form>
+
+                                    {{-- Tombol Tolak (Opsional, kalau mau ditambah route reject) --}}
+                                    <button class="btn btn-sm btn-outline-secondary rounded-circle" title="Tolak Pesanan" disabled>
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            @else
+                                <span class="small text-muted"><i class="bi bi-dash-lg"></i></span>
+                            @endif
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">Belum ada transaksi terekam.</td>
+                        <td colspan="7" class="text-center py-5 text-muted">Belum ada transaksi masuk.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
-    @if($recent_orders->count() > 0)
+    @if(isset($recent_orders) && $recent_orders->count() > 0)
     <div class="card-footer bg-white text-center py-3 border-0">
         <a href="#" class="text-danger fw-bold text-decoration-none small">LIHAT SEMUA PESANAN <i class="bi bi-arrow-right ms-1"></i></a>
     </div>

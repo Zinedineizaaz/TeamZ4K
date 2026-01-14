@@ -103,7 +103,7 @@ class OrderController extends Controller
             }
         });
 
-        return back()->with('success', 'Pembayaran Berhasil Diverifikasi (ACC Manual)!');
+        return back()->with('success', 'Pembayaran Berhasil Diverifikasi!');
     }
 
     public function handleWebhook(Request $request)

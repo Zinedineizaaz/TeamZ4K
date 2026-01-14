@@ -1,28 +1,69 @@
-# 🌟 TEAMZ4K – Dimsayku
+# 🥟 TEAMZ4K – Dimsayku
 
 ## 📌 Deskripsi Project
-TEAMZ4K adalah aplikasi To-Do List berbasis **Laravel** yang menyediakan fitur manajemen tugas harian menggunakan konsep **CRUD**, **Eloquent ORM**, **Form Validation**, **Controller**, dan **Migration**.  
-Project ini dikembangkan sebagai bagian dari pembelajaran framework Laravel.
+**TEAMZ4K – Dimsayku** adalah aplikasi manajemen tugas dan operasional UMKM berbasis **Laravel** yang dirancang untuk mendigitalisasi proses bisnis dimsum. Aplikasi ini menyediakan fitur manajemen tugas harian dan data produk menggunakan standar pengembangan perangkat lunak modern seperti konsep **CRUD, Eloquent ORM, Form Validation, Controller, dan Migration.** Project ini dikembangkan sebagai bagian dari tugas mata kuliah **Rekayasa Perangkat Lunak** untuk mendemonstrasikan integrasi CI/CD dan arsitektur perangkat lunak yang baik.
 
 ---
 
 ## 👥 Anggota Tim
-| Nama Lengkap | NIM | Peran |
-|--------------|------|-----------------------------------------------|
-| **Agus Saputra Hamzah** | 2310120018 | Ketua Tim – Logika aplikasi & manajemen data - Eloquent ORM dan Contoller |
-| **Khairan Noor Fadhlillah** | 23101200XX | UI/UX - Controller dan Collection |
-| **Zined** | 23101200XX | Integrasi CRUD & struktur database - Form Processing dan Validation |
+| Nama Lengkap | NIM | 
+| :--- | :--- | :--- |
+| **Agus Saputra Hamzah** | 2310120018 |
+| **Khairan Noor Fadhlillah** | 23101200XX | 
+| **Zinedine Izaaz** | 23101200XX | 
 
 ---
 
-## ⚙️ Fitur Utama TEAMZ4K
-- CRUD To-Do (Create, Read, Update, Delete)
-- Validasi input form
-- Manajemen data menggunakan Eloquent ORM
-- Routing berbasis Controller
-- Migration & struktur database otomatis
+## 🚀 Fitur Framework Laravel
+Aplikasi ini telah mengimplementasikan fitur-fitur inti Laravel berikut:
+
+* **Arsitektur Dasar:** Route, View, Controller.
+* **Templating:** Blade Template (Short command & layout design).
+* **Frontend:** Bootstrap / TailwindCSS Framework.
+* **Database:** Migration, Eloquent ORM, Collection.
+* **Logic:** Form Processing & Form Validation, CRUD (Create-Read-Update-Delete).
+* **Security & Middleware:** Middleware, Authentication, Policy, Session.
+* **Advanced:** File Upload (Integration with Cloudinary).
 
 ---
+
+🏗️ Dokumentasi CI/CD & Deployment (Latihan Week 12)
+1. Arsitektur CI/CD Pipeline
+Kami menggunakan GitHub Actions sebagai orkestrator CI/CD. Alur kerja dimulai dari Local Development, dilanjutkan dengan Push ke Feature Branch, kemudian divalidasi melalui Pull Request otomatis sebelum akhirnya di-merge ke branch utama.
+
+2. Penjelasan Workflow GitHub Actions
+Sesuai dengan konfigurasi pada folder .github/workflows/:
+- Trigger: Pipeline otomatis berjalan saat ada Pull Request ke branch main atau staging.
+- Runner: Menggunakan environment ubuntu-latest. 
+- Steps Utama:
+1. Checkout Code: Mengambil source code terbaru.
+2. Setup PHP & Dependencies: Menginstal PHP 8.2 dan Composer.
+3. Environment Preparation: Menyalin .env.example dan generate APP_KEY.
+4. Automated Testing: Menjalankan php artisan test (SQLite :memory:) untuk memverifikasi fungsi CRUD dan validasi tetap berjalan normal sebelum di-merge.
+
+3. Branching Strategy
+Tim kami menerapkan strategi kolaborasi berbasis branch:
+- main: Kode produksi yang stabil dan sudah melalui review (Production).
+- staging: Branch integrasi untuk pengujian tim sebelum rilis ke production.
+- feature/update-title: Contoh branch fitur untuk perubahan spesifik (Latihan Week 12).
+- fix-total: Branch khusus untuk konsolidasi fitur dan perbaikan bug besar.
+
+4. Cara Kerja Deployment Staging & Production
+Deployment dilakukan menggunakan platform Vercel dengan Serverless Runtime:
+- Staging: Terhubung otomatis ke branch staging. Setiap perubahan akan di-deploy ke URL staging untuk tahap Quality Assurance (QA).
+- Production: Terhubung ke branch main. Deployment hanya dilakukan jika kode sudah stabil dan Pull Request disetujui oleh Ketua Tim.
+
+5. Mekanisme Rollback
+Untuk menjaga stabilitas aplikasi, kami menyiapkan dua skema pembatalan:
+- Vercel Rollback: Menggunakan fitur Instant Rollback pada dashboard Vercel untuk mengembalikan status aplikasi ke versi deployment sebelumnya yang sukses.
+- Git Revert/Reset: Menggunakan perintah git revert <commit_hash> untuk membatalkan commit bermasalah di repository, yang kemudian akan memicu redeploy otomatis versi yang diperbaiki.
+
+🌐 Staging URL (Vercel) : https://dimsaykuu-git-staging-zinedineizaazs-projects.vercel.app/
+🚀 Production URL (Vercel) : https://dimsaykuu.vercel.app/
+
+▶️ YouTube Link
+
+📺 Video Demo / Dokumentasi : https://youtu.be/PIzHsRK0GaA?si=E_dmeoGA8DzcaE9u
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
